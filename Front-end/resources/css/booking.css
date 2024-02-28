@@ -1,0 +1,127 @@
+:root{
+    --primary:#041421;
+    --secondary:#06313e;
+    --tertiary:#4c7273;
+    --background:#86b9b0;
+    --sec-background:#d0d6d6;
+}
+
+
+/*navbar*/
+
+.nav-item{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+
+#nav-top a{
+    color: #ffff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+
+
+/* Search rooms */
+.search-container {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
+.input-container {
+    display: flex; 
+    justify-content: space-between;
+}
+
+.searchInput {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    display: block; 
+    text-align: center; 
+    margin: 10px;
+}
+
+#adults,
+#children {
+    width: 40px;
+}
+
+.search-btn {
+    text-align: center;
+    padding: 20px; 
+}
+/*hero*/
+
+#hero{
+    background-image:
+                linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
+                url('https://yc2401fotos.blob.core.windows.net/upload/hotels/Hotel_9_Pic_2.jpg');
+    background-repeat: no-repeat;
+    height: 900px;
+}
+
+
+.text-white{
+    text-align: center;
+}
+
+
+
+
+
+/*search*/
+
+#search{
+    background-color: rgba(255, 255, 255, 0.09);
+    backdrop-filter: blur(5px);
+    padding: 3rem 0;
+    border-radius: 2rem;
+    border:none;
+}
+
+.searchInput{
+    font-size: 1rem;
+    font-weight: 600;
+    color: #d0d6d6;
+}
+
+.searchInput input{
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    margin: 0.5rem 0;
+}
+
+.searchInput select{
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    margin: 0.5rem 0;
+}
+
+
+/*search output*/
+#room-order{
+    display:grid;
+}
+
+.reserve{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#room .images{
+    height: fit-content;
+}
+

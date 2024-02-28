@@ -1,0 +1,74 @@
+
+:root{
+    --primary:#041421;
+    --secondary:#06313e;
+    --tertiary:#4c7273;
+    --background:#86b9b0;
+    --sec-background:#d0d6d6;
+}
+
+
+/*navbar*/
+
+.nav-item{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+
+#nav-top a{
+    color: #ffff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+/*hero*/
+
+#hero{
+    background-image:
+                linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
+                url('https://yc2401fotos.blob.core.windows.net/upload/hotels/Hotel_8_Pic_2.jpg');
+    background-repeat: no-repeat;
+    height: 800px;
+}
+
+
+.text-white{
+    text-align: center;
+}
+
+
+/*our history*/
+
+#our-history{
+    text-align: center;
+    justify-content: center;
+    background-color: #041421;
+    color: #ffff;
+    padding-bottom: 5rem;
+}
+
+
+#our-history img{
+    height: 500px;
+}
+
+/*owner*/
+
+#owner{
+    background-color: #041421;
+    color: #ffff;
+    padding-bottom: 5rem;
+}
+
+#owner img{
+    height: 300px;
+    margin-left: 8rem;
+}
+
+
+
+
+
