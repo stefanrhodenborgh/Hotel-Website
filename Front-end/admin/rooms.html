@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms</title>
+
+    <link rel="stylesheet" href="/admin/css/rooms.css">
+
+    <script src="/js/general.js"></script>
+    <script src="/admin/js/rooms.js"></script>
+</head>
+<body>
+    <a href="admin_dashboard.html"><button>Dashboard</button></a>
+    <a href="hotels.html"><button>Hotels</button></a>
+    <a href="#"><button>Rooms</button></a>
+    <a href="users.html"><button>Users</button></a>
+    <a href="reservations.html"><button>Reservations</button></a>
+
+    <h1>Rooms</h1>
+
+    <label>Select hotel:</label>
+    <select id="hotelDropdown" onchange="displayRooms()"></select>
+
+    <div id="rooms"></div>
+    <div id="editRoom"></div>
+
+    <h2>Create room</h2>
+
+    <label>Room type:</label>
+    <select id="roomTypeDropdown">
+        <option value="0">Single</option>
+        <option value="1">Double</option>
+        <option value="2">Family</option>
+    </select><br>
+    <label>Number of beds:</label>
+    <input type="text" id="noBeds"><br>
+    <label>Price:</label>
+    <input type="text" id="price"><br>
+    <button type="button" onclick="createRoom()">Create room</button>
+
+</body>
+</html>
