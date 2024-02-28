@@ -1,0 +1,130 @@
+
+:root{
+    --primary:#041421;
+    --secondary:#06313e;
+    --tertiary:#4c7273;
+    --background:#86b9b0;
+    --sec-background:#d0d6d6;
+}
+
+
+
+/*Header*/
+.header {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.header button {
+    font-size: 1.5rem;;
+    border-style: none;
+    background-color: transparent;
+}
+
+/*navbar*/
+
+.nav-item{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+
+#nav-top a{
+    color: #ffff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+
+/*hero*/
+
+#hero{
+    background-image:
+                linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
+                url('https://yc2401fotos.blob.core.windows.net/upload/hotels/Hotel_3_Pic_2.jpg');
+    background-repeat: no-repeat;
+    height: 800px;
+}
+
+
+.text-white{
+    text-align: center;
+}
+
+
+
+/*Find Your Perfect Stay*/
+.chooseHotel {
+    padding: 25px;
+    background-color:var(--tertiary);
+    
+}
+
+.chooseHotel p {
+    text-align: center;
+    color: #ffff;
+}
+
+
+.hotelSelector {
+    display: flex;
+    justify-content: center;
+}
+
+.hotelSelector button {
+    margin-left: 1rem;
+}
+
+
+/*Photo Carousel*/
+#hotel-title {
+    border: 1px solid black;
+    text-align: center;
+
+    padding: 20px;
+}
+
+#hotel-title h2 {
+    font-size: 2.3rem;
+}
+
+#carousel img {
+    height: 600px;
+    object-fit: cover;
+}
+
+
+/*Search rooms*/
+.search-container {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.searchInput {
+    margin: 5px;
+    align-items: center;
+}
+
+#adults {
+    width: 40px;
+}
+
+#children {
+    width: 40px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#search-button {
+    align-items: center;
+}
