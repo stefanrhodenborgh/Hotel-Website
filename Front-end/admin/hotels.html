@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels</title>
+    
+    <link rel="stylesheet" href="/admin/css/hotels.css">
+    
+    <script src="/js/general.js"></script>
+    <script src="/admin/js/hotels.js"></script>
+</head>
+<body>
+    <a href="admin_dashboard.html"><button>Dashboard</button></a>
+    <a href="#"><button>Hotels</button></a>
+    <a href="rooms.html"><button>Rooms</button></a>
+    <a href="users.html"><button>Users</button></a>
+    <a href="reservations.html"><button>Reservations</button></a>
+    
+    <h1>Hotels</h1>
+    <table id="hotels"></table>
+    <div id="editHotel"></div>
+
+    <div id="createHotel">
+    <h2>Create hotel</h2>
+        <label>Hotel name:</label>
+        <input type="text" id="name"><br>
+        <label>Street:</label>
+        <input type="text" id="street"><br>
+        <label>House number:</label>
+        <input type="text" id="houseNumber"><br>
+        <label>Zip code:</label>
+        <input type="text" id="zipCode"><br>
+        <label>City:</label>
+        <input type="text" id="city"><br>
+        <label>Country:</label>
+        <input type="text" id="country"><br>
+        <button onclick="createHotel()">Create hotel</button>
+    </div>  
+
+
+</body>
+</html>
