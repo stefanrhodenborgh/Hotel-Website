@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="/admin/css/rooms.css">
 
-    <script src="/js/general.js"></script>
+    <script src="/resources/js/general.js"></script>
     <script src="/admin/js/rooms.js"></script>
 </head>
 <body>
@@ -29,12 +29,12 @@
 
     <label>Room type:</label>
     <select id="roomTypeDropdown">
-        <option value="0">Single</option>
-        <option value="1">Double</option>
-        <option value="2">Family</option>
+        <option value="SINGLE_ROOM">Single room</option>
+        <option value="DOUBLE_ROOM">Double room</option>
+        <option value="FAMILY_SUITE">Family suite</option>
     </select><br>
     <label>Number of beds:</label>
-    <input type="text" id="noBeds"><br>
+    <input type="text" id="numBeds"><br>
     <label>Price:</label>
     <input type="text" id="price"><br>
     <button type="button" onclick="createRoom()">Create room</button>

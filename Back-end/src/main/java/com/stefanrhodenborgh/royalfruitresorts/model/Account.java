@@ -3,12 +3,11 @@ package com.stefanrhodenborgh.royalfruitresorts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.stefanrhodenborgh.royalfruitresorts.enums.Role;
 import jakarta.persistence.*;
 
 @Entity
 public class Account {
-    public enum Role { GUEST, STAFF, OWNER}
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -17,6 +16,7 @@ public class Account {
     @Column(nullable = false)
     private int loyaltyPoints;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)
     private long hotelId; // -100 (default) = user, 0 = owner, 1+ = staff of hotel ${hotelId}

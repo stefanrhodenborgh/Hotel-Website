@@ -12,6 +12,7 @@ function getBookingDetails(){
     }
 
     let roomType = query.roomType.charAt(0) + query.roomType.toLowerCase().slice(1);
+    roomType = roomType.replace('_', ' ');
 
     let surcharge = 0;
     if (query.children > 0) {
@@ -26,7 +27,7 @@ function getBookingDetails(){
     document.getElementById("bookRoom").innerHTML = `
         <h2 class="mb-4">Booking Details</h2>
         <p>${query.hotelName}</p>
-        <p>${roomType} room</p>
+        <p>${roomType}</p>
         <p>Check-in: ${query.ciDate}</p>
         <p>Check-out: ${query.coDate}</p>
         <p>${query.adults} adults, ${query.children} children</p>

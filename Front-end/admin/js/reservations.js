@@ -199,13 +199,13 @@ async function editReservation(reservationId, hotelId) {
 
         <label>Room type: </label>
         <select id="editRoomTypeDropdown" value="${reservation.roomType}">
-            <option value="0">Single</option>
-            <option value="1">Double</option>
-            <option value="2">Family</option>
+            <option value="SINGLE_ROOM">Single room</option>
+            <option value="DOUBLE_ROOM">Double room</option>
+            <option value="FAMILY_SUITE">Family suite</option>
         </select><br>
 
         <label>Number of beds</label>
-        <input type="text: " id="editNoBeds" value="${reservation.noBeds}"><br>
+        <input type="text: " id="editnumBeds" value="${reservation.numBeds}"><br>
         <label>Price: </label>
         <input type="text" id="editPrice" value="${reservation.price}"><br>
         <button onclick="submitRoomForm(${reservation.id})">Save changes</button>      

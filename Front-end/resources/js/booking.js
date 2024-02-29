@@ -118,7 +118,8 @@ async function searchRooms() {
 
             for (let i=0; i<rooms.length; i++) {
                 // RoomType in kleine letters zetten
-                const roomType = rooms[i].roomType.charAt(0) + rooms[i].roomType.slice(1).toLowerCase();
+                let roomType = rooms[i].roomType.charAt(0) + rooms[i].roomType.slice(1).toLowerCase();
+                roomType = roomType.replace('_', ' ');
 
                 roomshtml +=`
                     <div class="card mb-3 shadow p-3 mb-5 bg-body rounded" style="max-width: 540px;" id="room">
@@ -130,9 +131,9 @@ async function searchRooms() {
                         </div>
                         <div class="col-md-6">
                             <div class="card-body">
-                            <h5 class="card-title">${roomType} room</h5>
-                            <h6 class="card-title">${rooms[i].noBeds} beds</h6>
-                            <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio, nulla?</p>
+                            <h5 class="card-title">${roomType}</h5>
+                            <h6 class="card-title">${rooms[i].numBeds} beds</h6>
+                            <p class="card-text">${rooms[i].description}</p>
                             <div class="reserve">
                                 <div class="fw-bold" id="price">€${rooms[i].price}</div>
                                 <button class="reserve-btn btn btn-primary">Book</button>
@@ -172,7 +173,7 @@ function reserveRoom(query, room) {
     queryParams.append('roomType', room.roomType);
     queryParams.append('price', room.price);
     // Redirect to book.html with query parameters
-    window.location.href = "reservation_details.html?" + queryParams.toString();
+    window.location.href = "./user/reservation_details.html?" + queryParams.toString();
 }
 
 
