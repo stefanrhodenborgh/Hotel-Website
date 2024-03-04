@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 
+import com.stefanrhodenborgh.royalfruitresorts.enums.Role;
 import com.stefanrhodenborgh.royalfruitresorts.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class AccountService {
                 user.setAccount(account);
 
                 account.setLoyaltyPoints(0);
-                account.setRole(Account.Role.GUEST);
+                account.setRole(Role.GUEST);
                 account.setHotelId(-100);
                 account.setUser(user);
 
@@ -69,7 +70,7 @@ public class AccountService {
 
         account.getUser().setEmail(account.getUser().getEmail().toLowerCase());
         account.setLoyaltyPoints(0);
-        account.setRole(Account.Role.GUEST);
+        account.setRole(Role.GUEST);
         account.setHotelId(-100);
         account.setUser(account.getUser());
 

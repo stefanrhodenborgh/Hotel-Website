@@ -4,20 +4,15 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.stefanrhodenborgh.royalfruitresorts.enums.PaymentMethod;
+import jakarta.persistence.*;
 
 @Entity
 public class Booking {
-    public enum PaymentMethod { CASH, IDEAL }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     @Column(nullable = false)
     private LocalDateTime date;

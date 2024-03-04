@@ -48,7 +48,7 @@ async function displayRooms() {
             </tr>
             <tr>
                 <td>Number of beds:</td>
-                <td>${rooms[i].noBeds}</td>
+                <td>${rooms[i].numBeds}</td>
             </tr>
             <tr>
                 <td>Price:</td>
@@ -72,7 +72,7 @@ async function createRoom() {
     let room = {
         //id: generated
         "roomType": document.getElementById("roomTypeDropdown").value,
-        "noBeds": document.getElementById("noBeds").value,
+        "numBeds": document.getElementById("numBeds").value,
         "price": document.getElementById("price").value
     }
     
@@ -108,13 +108,13 @@ async function editRoom(roomId, hotelId) {
 
         <label>Room type: </label>
         <select id="editRoomTypeDropdown" value="${room.roomType}">
-            <option value="0">Single</option>
-            <option value="1">Double</option>
-            <option value="2">Family</option>
+            <option value="SINGLE_ROOM">Single room</option>
+            <option value="DOUBLE_ROOM">Double room</option>
+            <option value="FAMILY_SUITE">Family suite</option>
         </select><br>
 
         <label>Number of beds</label>
-        <input type="text: " id="editNoBeds" value="${room.noBeds}"><br>
+        <input type="text: " id="editnumBeds" value="${room.numBeds}"><br>
         <label>Price: </label>
         <input type="text" id="editPrice" value="${room.price}"><br>
         <button onclick="submitRoomForm(${room.id})">Save changes</button>      
@@ -131,12 +131,12 @@ async function editRoom(roomId, hotelId) {
 function submitRoomForm(roomId) {
     let edditedRoom = {
         "roomType": document.getElementById("editRoomTypeDropdown").value,
-        "noBeds": document.getElementById("editNoBeds").value,
+        "numBeds": document.getElementById("editnumBeds").value,
         "price": document.getElementById("editPrice").value
     };
     let edditedHotelId = document.getElementById("editHotelDropdown").value;
     fetch(url+"/editroom/" + roomId + "?hotelId=" + edditedHotelId, {
-        method: "POST", // or 'PUT'
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },

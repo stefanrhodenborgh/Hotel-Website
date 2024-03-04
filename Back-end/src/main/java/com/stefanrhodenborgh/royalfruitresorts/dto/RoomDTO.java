@@ -1,13 +1,14 @@
 package com.stefanrhodenborgh.royalfruitresorts.dto;
 
+import com.stefanrhodenborgh.royalfruitresorts.enums.RoomType;
 import com.stefanrhodenborgh.royalfruitresorts.model.Room;
 
 public class RoomDTO {
     private long id;
     private String hotelName;
-    private Room.RoomType roomType;
+    private RoomType roomType;
     private String description;
-    private int noBeds;
+    private int numBeds;
     private double price;
 
 
@@ -16,7 +17,7 @@ public class RoomDTO {
         this.hotelName = room.getHotel().getName();
         this.roomType = room.getRoomType();
         this.description = room.getDescription();
-        this.noBeds = room.getNoBeds();
+        this.numBeds = room.getNumBeds();
         this.price = room.getPrice();
     }
 
@@ -36,11 +37,11 @@ public class RoomDTO {
         this.hotelName = hotelName;
     }
 
-    public Room.RoomType getRoomType() {
+    public RoomType getRoomType() {
         return roomType;
     }
 
-    public void setRoomType(Room.RoomType roomType) {
+    public void setRoomType(RoomType roomType) {
         this.roomType = roomType;
     }
 
@@ -52,12 +53,12 @@ public class RoomDTO {
         this.description = description;
     }
 
-    public int getNoBeds() {
-        return noBeds;
+    public int getNumBeds() {
+        return numBeds;
     }
 
-    public void setNoBeds(int noBeds) {
-        this.noBeds = noBeds;
+    public void setNumBeds(int numBeds) {
+        this.numBeds = numBeds;
     }
 
     public double getPrice() {

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.stefanrhodenborgh.royalfruitresorts.enums.PaymentMethod;
+import com.stefanrhodenborgh.royalfruitresorts.enums.ReservationStatus;
 import com.stefanrhodenborgh.royalfruitresorts.model.Booking;
 import com.stefanrhodenborgh.royalfruitresorts.model.Reservation;
 import com.stefanrhodenborgh.royalfruitresorts.repository.AccountRepository;
@@ -24,27 +26,6 @@ public class BookingService {
 
 
     // Create
-//    public boolean createBooking(long reservationId, Booking booking) {
-//        try {
-//            booking.setDate(LocalDateTime.now());
-//            Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
-//            reservation.setStatus(Reservation.Status.BOOKED);
-//            reservation.setBooking((booking));
-//            booking.setReservation(reservation);
-//
-//            bookingRepository.save(booking);
-//            reservationRepository.save(reservation);
-//            System.out.println("Successfully created booking on Id: " + booking.getId());
-//            return true;
-//        } catch (NoSuchElementException e) {
-//            System.err.println("Failed to create booking. Reservation doesn't exist on Id: " + booking.getReservation().getId());
-//            return false;
-//        } catch (DataAccessException e) {
-//            System.err.println("Failed to save booking to the database: " + e.getMessage());
-//            return false;
-//        }
-//    }
-
     public boolean createBooking(String uuid) {
         Optional<Reservation> reservation = reservationRepository.findByUuidAndBookingIdIsNull(uuid);
 
@@ -54,7 +35,7 @@ public class BookingService {
             return false;
         }
 
-        if (reservation.get().getStatus() == Reservation.Status.CANCELLED) {
+        if (reservation.get().getReservationStatus() == ReservationStatus.CANCELLED) {
             System.err.println("Reservation with uuid " + uuid + " is already cancelled. Create new reservation");
             return false;
         }
@@ -67,10 +48,10 @@ public class BookingService {
             accountRepository.save(reservation.get().getUser().getAccount());
         }
 
-        reservation.get().setStatus(Reservation.Status.BOOKED);
+        reservation.get().setStatus(ReservationStatus.BOOKED);
 
         booking.setDate(LocalDateTime.now());
-        booking.setPaymentMethod(Booking.PaymentMethod.IDEAL);
+        booking.setPaymentMethod(PaymentMethod.IDEAL);
         booking.setReservation(reservation.get());
 
         bookingRepository.save(booking);
@@ -118,23 +99,4 @@ public class BookingService {
 
     // Delete
     // Om een booking te verwijderen: gebruik cancel-reservation endpoint
-//    public boolean deleteBooking(long bookingId, long reservationId) {
-//        try {
-//            Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-//            Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
-//            reservation.setBooking(null);
-//            reservation.setStatus(Reservation.Status.CANCELLED);
-//            bookingRepository.deleteById(booking.getId());
-//            System.out.println("Successfully deleted booking with Id: " + bookingId);
-//            return true;
-//        } catch (NoSuchElementException e) {
-//            System.err.println("Failed to delete booking. Cannot find booking on Id: " + bookingId);
-//        } catch (Exception e) {
-//            System.err.println("Failed to delete booking with Id: " + bookingId);
-//            System.err.println(e.getMessage());
-//        }
-//        return false;
-//    }
-
-
 }

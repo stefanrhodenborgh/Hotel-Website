@@ -4,19 +4,11 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import com.stefanrhodenborgh.royalfruitresorts.enums.ReservationStatus;
+import jakarta.persistence.*;
 
 @Entity
 public class Reservation {
-    public enum Status { RESERVED, BOOKED, CANCELLED }
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -32,7 +24,8 @@ public class Reservation {
     private boolean surcharge;
     @Column(length = 500)
     private String specialRequest;
-    private Status status = Status.RESERVED;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus reservationStatus = ReservationStatus.RESERVED;
     private String uuid;
     @ManyToOne
     private Room room;
@@ -100,12 +93,12 @@ public class Reservation {
         this.specialRequest = specialRequest;
     }
 
-    public Status getStatus() {
-        return status;
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
     }
 
     public String getUuid() {

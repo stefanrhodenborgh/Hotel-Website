@@ -5,24 +5,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.stefanrhodenborgh.royalfruitresorts.enums.RoomType;
+import jakarta.persistence.*;
 
 @Entity
 public class Room {
-    public enum RoomType { SINGLE, DOUBLE, FAMILY }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Enumerated(EnumType.STRING)
     private RoomType roomType;
     @Column(nullable = false, length = 4)
-    private int noBeds;
+    private int numBeds;
     @Column(length = 1000)
     private String description;
     @Column(nullable = false, length = 10)
@@ -42,12 +36,12 @@ public class Room {
         this.id = id;
     }
 
-    public int getNoBeds() {
-        return noBeds;
+    public int getNumBeds() {
+        return numBeds;
     }
 
-    public void setNoBeds(int noBeds) {
-        this.noBeds = noBeds;
+    public void setNumBeds(int numBeds) {
+        this.numBeds = numBeds;
     }
 
     public String getDescription() {

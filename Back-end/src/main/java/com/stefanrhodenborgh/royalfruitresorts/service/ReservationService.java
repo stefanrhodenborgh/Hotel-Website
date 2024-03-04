@@ -1,6 +1,7 @@
 package com.stefanrhodenborgh.royalfruitresorts.service;
 
 import com.stefanrhodenborgh.royalfruitresorts.dto.ReservationDTO;
+import com.stefanrhodenborgh.royalfruitresorts.enums.ReservationStatus;
 import com.stefanrhodenborgh.royalfruitresorts.model.Account;
 import com.stefanrhodenborgh.royalfruitresorts.model.Reservation;
 import com.stefanrhodenborgh.royalfruitresorts.model.Room;
@@ -102,8 +103,8 @@ public class ReservationService {
             case "surcharge":
                 list.sort(Comparator.comparing(dto -> dto.getReservation().isSurcharge()));
                 break;
-            case "status":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getStatus()));
+            case "reservationStatus":
+                list.sort(Comparator.comparing(dto -> dto.getReservation().getReservationStatus()));
                 break;
             case "userId":
                 list.sort(Comparator.comparingLong(dto -> {
@@ -178,7 +179,7 @@ public class ReservationService {
             if (updatedReservation.getReservation().getSpecialRequest() != null) {
                 reservation.setSpecialRequest(updatedReservation.getReservation().getSpecialRequest());
             }
-            reservation.setStatus(Reservation.Status.RESERVED);
+            reservation.setStatus(ReservationStatus.RESERVED);
 
             reservationRepository.save(reservation);
             System.out.println("Reservation successfully edited");
@@ -191,46 +192,6 @@ public class ReservationService {
         }
         return false;
     }
-
-
-//    public boolean editReservation(long id, ReservationDTO updatedReservation) {
-//        try {
-//            Reservation reservation = reservationRepository.findById(id).orElseThrow();
-//            Room room = roomRepository.findById(updatedReservation.getRoomId()).orElseThrow();
-//            reservation.setRoom(room);
-//
-//            if (updatedReservation.getReservation().getCiDate() != null) {
-//                reservation.setCiDate(updatedReservation.getReservation().getCiDate());
-//            }
-//            if (updatedReservation.getReservation().getCoDate() != null) {
-//                reservation.setCoDate(updatedReservation.getReservation().getCoDate());
-//            }
-//            if (updatedReservation.getReservation().getAdults() != 0) {
-//                reservation.setAdults(updatedReservation.getReservation().getAdults());
-//            }
-//            reservation.setChildren(updatedReservation.getReservation().getChildren());
-//            reservation.setSurcharge(updatedReservation.getReservation().getChildren() != 0);
-//            if (updatedReservation.getReservation().getSpecialRequest() != null) {
-//                reservation.setSpecialRequest(updatedReservation.getReservation().getSpecialRequest());
-//            }
-//            reservation.setStatus(Reservation.Status.RESERVED);
-//
-//            reservationRepository.save(reservation);
-//            System.out.println("Reservation successfully edited");
-//            return true;
-//        } catch (NoSuchElementException e) {
-//            System.out.println(e.getMessage());
-//            if (e.getMessage().contains("reservation")) {
-//                System.err.println("Failed to edit reservation. Cannot find reservation on Id: " + id);
-//            } else {
-//                System.err.println("Failed to edit reservation. Cannot find room on Id: " + updatedReservation.getRoomId());
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Error while editing reservation");
-//            System.err.println(e.getMessage());
-//        }
-//        return false;
-//    }
 
 
     // Delete
@@ -259,8 +220,8 @@ public class ReservationService {
             }
 
 
-            // Reserveringen worden niet verwijderd, maar op status CANCELLED gezet
-            reservation.setStatus(Reservation.Status.CANCELLED);
+            // Reserveringen worden niet verwijderd, maar op reservationStatus CANCELLED gezet
+            reservation.setStatus(ReservationStatus.CANCELLED);
             reservationRepository.save(reservation);
             System.out.println("Reservation set to status CANCELLED for Id: " + id);
             return true;

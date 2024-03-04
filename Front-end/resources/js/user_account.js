@@ -93,7 +93,7 @@ async function displayReservations(time, isCheckboxChecked) {
     let reservationCount = 0;
     let reservationHTML = `<table>`;
     for (let i = 0; i < res.length; i++) {
-        if (isCheckboxChecked && res[i].reservation.status === "CANCELLED") {
+        if (isCheckboxChecked && res[i].reservation.reservationStatus === "CANCELLED") {
             continue;
         }
         
@@ -105,11 +105,11 @@ async function displayReservations(time, isCheckboxChecked) {
 
         // Communicatie over betalingstatus
         let status = "";
-        if (res[i].reservation.status === "BOOKED") {
+        if (res[i].reservation.reservationStatus === "BOOKED") {
             status = "Paid with IDEAL";
-        } else if (res[i].reservation.status === "RESERVED") {
+        } else if (res[i].reservation.reservationStatus === "RESERVED") {
             status = "Not paid yet";
-        } else if (res[i].reservation.status === "CANCELLED") {
+        } else if (res[i].reservation.reservationStatus === "CANCELLED") {
             status = "Reservation has been cancelled";
         } else {
             status = "Unknown"
@@ -122,14 +122,14 @@ async function displayReservations(time, isCheckboxChecked) {
             <td class="res-data">${status}</td>
         `;
         
-        // Cancel button toevoegen alleen als status "CANCELLED" is
-        if (res[i].reservation.status !== "CANCELLED" && time === "future") {
+        // Cancel button toevoegen alleen als reservationStatus "CANCELLED" is
+        if (res[i].reservation.reservationStatus !== "CANCELLED" && time === "future") {
             reservationHTML += `<td class="res-data res-btn"><button class="btn btn-outline-secondary text-white btn-sm" type="button" onclick="cancelReservation(${res[i].reservation.id})">Cancel reservation</button></td>`;
         } else {
             reservationHTML += `<td></td>`
         }
 
-        if (res[i].reservation.status !== "CANCELLED" && time === "past") {
+        if (res[i].reservation.reservationStatus !== "CANCELLED" && time === "past") {
             reservationHTML += `
             <td class="res-data res-btn"><button class="btn btn-success btn-sm" type="button" onclick="writeReview(${res[i].hotelId})">Write review</button></td>
             </tr>`;

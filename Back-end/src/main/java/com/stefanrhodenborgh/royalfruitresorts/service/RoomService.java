@@ -1,14 +1,9 @@
 package com.stefanrhodenborgh.royalfruitresorts.service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import com.stefanrhodenborgh.royalfruitresorts.dto.RoomDTO;
+import com.stefanrhodenborgh.royalfruitresorts.enums.ReservationStatus;
+import com.stefanrhodenborgh.royalfruitresorts.enums.RoomType;
 import com.stefanrhodenborgh.royalfruitresorts.model.Hotel;
-import com.stefanrhodenborgh.royalfruitresorts.model.Reservation;
 import com.stefanrhodenborgh.royalfruitresorts.model.Room;
 import com.stefanrhodenborgh.royalfruitresorts.repository.HotelRepository;
 import com.stefanrhodenborgh.royalfruitresorts.repository.ReservationRepository;
@@ -16,7 +11,12 @@ import com.stefanrhodenborgh.royalfruitresorts.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.stefanrhodenborgh.royalfruitresorts.dto.RoomDTO;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class RoomService {
@@ -69,8 +69,8 @@ public class RoomService {
             if (updatedRoom.getRoomType() != null) {
                 room.setRoomType(updatedRoom.getRoomType());
             }
-            if (updatedRoom.getNoBeds() != 0) {
-                room.setNoBeds(updatedRoom.getNoBeds());
+            if (updatedRoom.getNumBeds() != 0) {
+                room.setNumBeds(updatedRoom.getNumBeds());
             }
             room.setDescription(updatedRoom.getDescription());
             room.setPrice(updatedRoom.getPrice());
@@ -90,7 +90,7 @@ public class RoomService {
 
     public Status setRoomDescription(long hotelId, String roomType, String description) {
         try {
-            Room.RoomType rtEnum = Room.RoomType.valueOf(roomType.toUpperCase());
+            RoomType rtEnum = RoomType.valueOf(roomType.toUpperCase());
 
             if (description == null) { description = ""; }
 
@@ -126,40 +126,6 @@ public class RoomService {
 
 
     // Andere methoden
-//    public Iterable<RoomDTO> searchRooms (long hotelId, LocalDate cid, LocalDate cod, int adults, int children) {
-//        if (hotelRepository.existsById(hotelId)) {
-//            Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
-//
-//            // Zoekt naar geschikte kamers op basis van aantal bedden
-//            List<Room> suitableRooms = new ArrayList<>();
-//            for (int i = 0; i < hotel.getRooms().size(); i++) {
-//                if ((adults + children) <= hotel.getRooms().get(i).getNoBeds()) {
-//                    suitableRooms.add(hotel.getRooms().get(i));
-//                }
-//            }
-//
-//            // Hier komen de beschikbare kamers in
-//            List<RoomDTO> availableRooms = new ArrayList<>();
-//
-//            // Gaat elke kamer af van de geschikte kamers af
-//            for (Room suitableRoom : suitableRooms) {
-//                boolean available = checkAvailability(suitableRoom, cid, cod);
-//
-//                // Indien de kamer beschikbaar is, wordt de totaalprijs berekend waarna de kamer in de availableRooms gezet
-//                if (available) {
-//                    RoomDTO room = new RoomDTO(suitableRoom);
-//                    room.setPrice(calculatePrice(room.getPrice(), cid, cod, children));
-//                    availableRooms.add(room);
-//                }
-//            }
-//            if (availableRooms.isEmpty()) {
-//                System.out.println("No available rooms found");
-//            }
-//            return availableRooms;
-//        } else return null;
-//    }
-
-
     public Iterable<RoomDTO> searchRooms (long hotelId, LocalDate cid, LocalDate cod, int adults, int children) {
         Optional<Hotel> hotel = hotelRepository.findById(hotelId);
 
@@ -171,7 +137,7 @@ public class RoomService {
         // Zoekt naar geschikte kamers op basis van aantal bedden
         List<Room> suitableRooms = new ArrayList<>();
         for (int i = 0; i < hotel.get().getRooms().size(); i++) {
-            if ((adults + children) <= hotel.get().getRooms().get(i).getNoBeds()) {
+            if ((adults + children) <= hotel.get().getRooms().get(i).getNumBeds()) {
                 suitableRooms.add(hotel.get().getRooms().get(i));
             }
         }
@@ -203,7 +169,7 @@ public class RoomService {
         // Indien de boolean bij elke reservering true blijft en de reservering, komt het in de availableRooms List terecht
         boolean available = true;
         for (int i = 0; i < suitableRoom.getReservation().size(); i++) {
-            boolean cancelled = suitableRoom.getReservation().get(i).getStatus() == Reservation.Status.CANCELLED;
+            boolean cancelled = suitableRoom.getReservation().get(i).getReservationStatus() == ReservationStatus.CANCELLED;
 
             // Stuurt available false als reservering overlapt en de status van de reservering niet CANCELLED is
             if (suitableRoom.getReservation().get(i).getCiDate().isBefore(cid) &&
@@ -258,7 +224,7 @@ public class RoomService {
 
             if (evaluate.getDescription() != null && r.getDescription() != null) {
                 if (evaluate.getRoomType().equals(r.getRoomType()) &&
-                    evaluate.getNoBeds() == r.getNoBeds() &&
+                    evaluate.getNumBeds() == r.getNumBeds() &&
                     evaluate.getDescription().equals(r.getDescription()) &&
                     evaluate.getPrice() == r.getPrice()) {
                     return true;
@@ -266,7 +232,7 @@ public class RoomService {
 
             } else {
                 if (evaluate.getRoomType().equals(r.getRoomType()) &&
-                    evaluate.getNoBeds() == r.getNoBeds() &&
+                    evaluate.getNumBeds() == r.getNumBeds() &&
                     evaluate.getPrice() == r.getPrice()) {
                     return true;
                 }
