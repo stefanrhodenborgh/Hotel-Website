@@ -40,7 +40,7 @@ public class AccountService {
 
                 account.setLoyaltyPoints(0);
                 account.setRole(Role.GUEST);
-                account.setHotelId(-100);
+                account.setHotelId(Account.USER_HOTEL_ID);
                 account.setUser(user);
 
                 accountRepository.save(account);
@@ -71,7 +71,7 @@ public class AccountService {
         account.getUser().setEmail(account.getUser().getEmail().toLowerCase());
         account.setLoyaltyPoints(0);
         account.setRole(Role.GUEST);
-        account.setHotelId(-100);
+        account.setHotelId(Account.USER_HOTEL_ID);
         account.setUser(account.getUser());
 
         userRepository.save(account.getUser());

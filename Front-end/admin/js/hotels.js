@@ -79,7 +79,7 @@ function submitHotelForm(hotelId) {
         "country": document.getElementById("editCountry").value     
     }
 
-    fetch(url+"/edithotel/" + hotelId, {
+    fetch(url+"/update-hotel/" + hotelId, {
         method: "POST", // or 'PUT'
         headers: {
             "Content-Type": "application/json",
@@ -91,7 +91,7 @@ function submitHotelForm(hotelId) {
 }
 
 async function deleteHotel(hotelId) {
-    fetch(url+"/deletehotel/" + hotelId);
+    fetch(url+"/delete-hotel/" + hotelId);
     alert("Hotel successfully deleted");
     getAllHotels();
 }

@@ -6,6 +6,7 @@ import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReviewRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.RoomRepository;
+import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class HotelService {
     private ReservationRepository reservationRepository;
     @Autowired
     private ReviewRepository reviewRepository;
-
+    @Autowired
+    private InputValidator inputValidator;
     private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
 
@@ -35,8 +37,8 @@ public class HotelService {
     // Create
     public boolean createHotel (Hotel hotel){
 
-        if (isAnyFieldBlank(hotel)) {
-            logger.error("Failed to create hotel. Fields of hotel cannot be null");
+        if (inputValidator.areRequiredFieldsInvalid(hotel)) {
+            logger.error("Failed to create hotel. Input fields are invalid");
             return false;
         }
 
@@ -49,15 +51,22 @@ public class HotelService {
 
     // Read
     public Iterable<Hotel> getAllHotels() {
-        return hotelRepository.findAll();
+        Iterable<Hotel> hotels = hotelRepository.findAll();
+
+        if (!hotels.iterator().hasNext()) {
+            logger.error("No hotels found in database");
+        }
+
+        return hotels;
     }
 
 
     public Optional<Hotel> getHotel(long id) {
         Optional<Hotel> hotel = hotelRepository.findById(id);
 
-        if (hotel.isEmpty())
-            logger.error("Failed to get hotel. Cannot find hotel on Id: {}", id);
+        if (hotel.isEmpty()) {
+            logger.error("Failed to get hotel. Cannot find hotel (id: {})", id);
+        }
 
         return hotel;
     }
@@ -67,7 +76,7 @@ public class HotelService {
         Optional<Hotel> hotel = hotelRepository.findById(hotelId);
 
         if (hotel.isEmpty()) {
-            logger.error("Failed to get rooms. Cannot find hotel on Id: {}", hotelId);
+            logger.error("Failed to get rooms. Cannot find hotel (id: {})", hotelId);
             return null;
         }
 
@@ -96,7 +105,13 @@ public class HotelService {
 
 
     public Iterable<Review> getReviewsOfHotel(long id) {
-        return reviewRepository.getReviewsFromHotel(id);
+        Iterable<Review> reviews = reviewRepository.getReviewsFromHotel(id);
+
+        if (!reviews.iterator().hasNext()) {
+            logger.warn("No reviews found of hotel (id: {})", id);
+        }
+
+        return reviews;
     }
 
 
@@ -106,12 +121,12 @@ public class HotelService {
         Optional<Hotel> hotel = hotelRepository.findById(id);
 
         if (hotel.isEmpty()) {
-            logger.error("Failed to edit hotel. Cannot find hotel on Id: {}", id);
+            logger.error("Failed to edit hotel. Cannot find hotel (id: {})", id);
             return false;
         }
 
-        if (isAnyFieldBlank(updatedHotel)) {
-            logger.error("Failed to edit hotel. Fields cannot be blank");
+        if (inputValidator.areRequiredFieldsInvalid(updatedHotel)) {
+            logger.error("Failed to edit hotel (id: {}). Input fields are invalid", id);
             return false;
         }
 
@@ -124,7 +139,7 @@ public class HotelService {
         hotel.get().setDescription(updatedHotel.getDescription());
 
         hotelRepository.save(hotel.get());
-        logger.info("Successfully edited hotel on id: {}", id);
+        logger.info("Successfully edited hotel (id: {})", id);
         return true;
     }
 
@@ -135,27 +150,22 @@ public class HotelService {
         Optional<Hotel> hotel = hotelRepository.findById(id);
 
         if (hotel.isEmpty()) {
-            logger.error("Failed to delete hotel. Cannot find hotel on Id: {}", id);
+            logger.error("Failed to delete hotel. Cannot find hotel (id: {})", id);
             return false;
         }
 
         hotelRepository.deleteById(id);
-        logger.info("Successfully deleted hotel on Id: {}", id);
+        logger.info("Successfully deleted hotel (id: {})", id);
         return true;
     }
 
 
 
     // Andere methodes
-    private boolean isAnyFieldBlank(Hotel hotel) {
-        // hotel description mag null zijn
-        return hotel.getName() == null ||
-                hotel.getStreet() == null ||
-                hotel.getHouseNumber() == null ||
-                hotel.getZipCode() == null ||
-                hotel.getCity() == null ||
-                hotel.getCountry() == null;
-    }
+
+
+
+
 }
 
 

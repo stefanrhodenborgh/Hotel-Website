@@ -60,14 +60,14 @@ public class HotelController {
 
 
     // Edit
-    @PutMapping ("/edithotel/{id}")
+    @PutMapping ("/update-hotel/{id}")
     public boolean editHotel (@PathVariable ("id") long id, @RequestBody Hotel updatedHotel) {
         return hotelService.editHotel(id, updatedHotel);
     }
 
 
     // Delete
-    @DeleteMapping ("/deletehotel/{id}")
+    @DeleteMapping ("/delete-hotel/{id}")
     public boolean deleteHotel(@PathVariable ("id") long id) {
         return hotelService.deleteHotel(id);
     }

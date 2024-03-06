@@ -11,23 +11,33 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(nullable = false, length = 100)
     private String password;
+
     @Column(nullable = false)
     private int loyaltyPoints;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @Column(nullable = false)
-    private long hotelId; // -100 (default) = user, 0 = owner, 1+ = staff of hotel ${hotelId}
-    @OneToOne
-    private User user;
-    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
-    private List<Review> reviews = new ArrayList<>();
-    
+    private long hotelId; // USER_HOTEL_ID, OWNER_HOTEL_ID, of hotelId = staff van hotel ${hotelId}
+
     @Column(length = 100, unique = true)
     private String token;
 
+    @OneToOne
+    private User user;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    private List<Review> reviews = new ArrayList<>();
+
+
+
+    public static final long USER_HOTEL_ID = -1L;
+    public static final long OWNER_HOTEL_ID = 0L;
 
 
     public long getId() {

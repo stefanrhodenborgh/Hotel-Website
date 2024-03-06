@@ -14,6 +14,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RoomType roomType;
     @Column(nullable = false, length = 4)
     private int numBeds;
