@@ -6,6 +6,7 @@ import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReviewRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.RoomRepository;
+import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
 import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +31,21 @@ public class HotelService {
     private ReviewRepository reviewRepository;
     @Autowired
     private InputValidator inputValidator;
+    @Autowired
+    private DataFormatter dataFormatter;
     private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
 
 
     // Create
-    public boolean createHotel (Hotel hotel){
+    public boolean createHotel(Hotel hotel){
 
         if (inputValidator.areRequiredFieldsInvalid(hotel)) {
             logger.error("Failed to create hotel. Input fields are invalid");
             return false;
         }
 
+        dataFormatter.formatFields(hotel);
         hotelRepository.save(hotel);
         logger.info("Successfully created hotel on Id: {}", hotel.getId());
         return true;
@@ -116,8 +120,8 @@ public class HotelService {
 
 
 
-    // Edit
-    public boolean editHotel(long id, Hotel updatedHotel)  {
+    // Update
+    public boolean updateHotel(long id, Hotel updatedHotel)  {
         Optional<Hotel> hotel = hotelRepository.findById(id);
 
         if (hotel.isEmpty()) {
@@ -129,6 +133,8 @@ public class HotelService {
             logger.error("Failed to edit hotel (id: {}). Input fields are invalid", id);
             return false;
         }
+
+        dataFormatter.formatFields(updatedHotel);
 
         hotel.get().setName(updatedHotel.getName());
         hotel.get().setStreet(updatedHotel.getStreet());

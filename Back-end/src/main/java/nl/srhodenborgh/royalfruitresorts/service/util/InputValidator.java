@@ -5,15 +5,37 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InputValidator {
+    private static final String NAME_REGEX = "^[a-zA-Z\\u00C0-\\u017F'\\s]+$";
+    private static final String STREET_REGEX = "^[a-zA-Z0-9\\u00C0-\\u017F'\\s.,-]+$";
+    private static final String HOUSE_NUMBER_REGEX = "^[a-zA-Z0-9\\s.,-]+$";
+    private static final String ZIP_CODE_REGEX = "^\\d{4,}(?:[-\\s]?[a-zA-Z0-9]+)?$";
+    private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+    private static final String PHONE_NUMBER_REGEX = "^[+()\\d]+$";
+
+    /**
+     * (?=.*[A-Za-z]): Positive lookahead assertion for at least one alphabetical character.
+     * (?=.*\d): Positive lookahead assertion for at least one digit.
+     * [A-Za-z\d@$!%*?&]{8,}: Matches at least 8 characters from the allowed character set, including letters (both uppercase and lowercase), digits, and some special characters (@$!%*?&).
+     */
+    private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
+
+
+
+    private boolean isFieldInvalid(String fieldValue, String regexPattern) {
+        return fieldValue == null || !fieldValue.matches(regexPattern);
+    }
+
+
+    // Overloaded methodes die checken of de fields correct ingevoerd zijn volgens de regex
     public boolean areRequiredFieldsInvalid(Hotel hotel) {
         // Nullable: description
 
-        return hotel.getName() == null ||
-                hotel.getStreet() == null ||
-                hotel.getHouseNumber() == null ||
-                hotel.getZipCode() == null ||
-                hotel.getCity() == null ||
-                hotel.getCountry() == null;
+        return isFieldInvalid(hotel.getName(), NAME_REGEX) ||
+                isFieldInvalid(hotel.getStreet(), STREET_REGEX) ||
+                isFieldInvalid(hotel.getHouseNumber(), HOUSE_NUMBER_REGEX) ||
+                isFieldInvalid(hotel.getZipCode(), ZIP_CODE_REGEX) ||
+                isFieldInvalid(hotel.getCity(), NAME_REGEX) ||
+                isFieldInvalid(hotel.getCountry(), NAME_REGEX);
     }
 
 
@@ -40,7 +62,6 @@ public class InputValidator {
 
     private boolean areRequiredFieldsInvalid(Booking booking) {
         // Date wordt automatisch toegewezen bij het creëren van een booking
-
         return booking.getPaymentMethod() == null;
     }
 
@@ -48,31 +69,30 @@ public class InputValidator {
     private boolean areRequiredFieldsInvalid(User user) {
         // Nullable: phoneNumber
 
-        return user.getFirstName() == null ||
-                user.getLastName() == null ||
-                user.getDateOfBirth() == null ||
-                user.getStreet() == null ||
-                user.getHouseNumber() == null ||
-                user.getZipCode() == null ||
-                user.getCity() == null ||
-                user.getCountry() == null ||
-                user.getEmail() == null;
+        return isFieldInvalid(user.getFirstName(), NAME_REGEX) ||
+                isFieldInvalid(user.getLastName(), NAME_REGEX) ||
+                isFieldInvalid(user.getStreet(), STREET_REGEX) ||
+                isFieldInvalid(user.getHouseNumber(), HOUSE_NUMBER_REGEX) ||
+                isFieldInvalid(user.getZipCode(), ZIP_CODE_REGEX) ||
+                isFieldInvalid(user.getCity(), NAME_REGEX) ||
+                isFieldInvalid(user.getCountry(), NAME_REGEX) ||
+                isFieldInvalid(user.getEmail(), EMAIL_REGEX) ||
+
+                isPhoneNumberInvalid(user.getPhoneNumber()) ||
+                user.getDateOfBirth() == null;
     }
 
 
     private boolean areRequiredFieldsInvalid(Account account) {
         // Nullable: token
 
-        // stuurt true als hotelId niet overeenkomt met USER_HOTEL_ID, OWNER_HOTEL_ID, of hotelId boven 0
-        if (account.getHotelId() != Account.USER_HOTEL_ID ||
-        account.getHotelId() != Account.OWNER_HOTEL_ID ||
-        account.getHotelId() < Account.USER_HOTEL_ID) {
-            return true;
-        }
+        return isFieldInvalid(account.getPassword(), PASSWORD_REGEX)  ||
+                account.getLoyaltyPoints() < 0 ||
+                account.getRole() == null ||
 
-        return account.getPassword() == null ||
-                account.getLoyaltyPoints() <= 0 ||
-                account.getRole() == null;
+                (account.getHotelId() != Account.USER_HOTEL_ID ||
+                account.getHotelId() != Account.OWNER_HOTEL_ID ||
+                account.getHotelId() < Account.USER_HOTEL_ID);
     }
 
 
@@ -80,8 +100,13 @@ public class InputValidator {
         // Nullable: comment
         // Date wordt automatisch toegewezen bij het creëren van een review
 
-        return review.getName() != null ||
+        return isFieldInvalid(review.getName(), NAME_REGEX) ||
                 review.getRating() < 1.0 ||
                 review.getRating() > 5.0;
+    }
+
+
+    private boolean isPhoneNumberInvalid(String phoneNumber) {
+        return !phoneNumber.matches(PHONE_NUMBER_REGEX);
     }
 }

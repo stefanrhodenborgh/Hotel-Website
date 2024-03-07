@@ -34,7 +34,7 @@ async function createHotel(){
         "city": document.getElementById("city").value,
         "country": document.getElementById("country").value       
     }
-    fetch(url+"/createhotel", {
+    fetch(url+"/create-hotel", {
     method: "POST", // or 'PUT'
     headers: {
         "Content-Type": "application/json",

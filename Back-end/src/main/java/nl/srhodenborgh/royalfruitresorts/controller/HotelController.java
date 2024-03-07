@@ -26,7 +26,7 @@ public class HotelController {
 
 
     // Create
-    @PostMapping("/createhotel")
+    @PostMapping("/create-hotel")
     public boolean createHotel (@RequestBody Hotel hotel) {
         return hotelService.createHotel(hotel);
     }
@@ -59,10 +59,10 @@ public class HotelController {
     }
 
 
-    // Edit
+    // Update
     @PutMapping ("/update-hotel/{id}")
-    public boolean editHotel (@PathVariable ("id") long id, @RequestBody Hotel updatedHotel) {
-        return hotelService.editHotel(id, updatedHotel);
+    public boolean updateHotel(@PathVariable ("id") long id, @RequestBody Hotel updatedHotel) {
+        return hotelService.updateHotel(id, updatedHotel);
     }
 
 
