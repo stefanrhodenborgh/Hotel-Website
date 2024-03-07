@@ -2,7 +2,7 @@ getAllHotels();
 
 
 function getAllHotels(){
-    fetch(url+"/allhotels")
+    fetch(url+"/all-hotels")
     .then(res => res.json())
     .then (hotels => {
         let hotelhtml = ""

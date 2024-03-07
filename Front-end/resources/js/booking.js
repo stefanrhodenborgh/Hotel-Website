@@ -42,7 +42,7 @@ function setMinCheckOutDate(){
 }
 
 function getAllHotels(){
-    return fetch(url+"/allhotels")
+    return fetch(url+"/all-hotels")
     .then(hotels => hotels.json());
 }
 
@@ -95,7 +95,7 @@ async function searchRooms() {
 
     try {
         // URL van de endpoint in back-end
-        const urllocal = url+`/searchrooms/${hotelId}?cid=${ciDate}&cod=${coDate}&adults=${adults}&children=${children}`;
+        const urllocal = url+`/search-rooms/${hotelId}?cid=${ciDate}&cod=${coDate}&adults=${adults}&children=${children}`;
         const response = await fetch(urllocal)
 
         // Checkt of hij een response kan krijgen van de URL

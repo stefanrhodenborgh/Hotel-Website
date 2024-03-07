@@ -22,6 +22,8 @@ public class DataFormatter {
     public void formatFields(Object object) {
         logger.warn("formatFields() method is disabled!");
 
+        // Uncomment deze sectie:
+
         // Gaat alle fields van object af en als het een String Field is stuurt hij de field door naar formatStringField
 //        for (Field field : object.getClass().getDeclaredFields()) {
 //            if (field.getType().equals(String.class)) {

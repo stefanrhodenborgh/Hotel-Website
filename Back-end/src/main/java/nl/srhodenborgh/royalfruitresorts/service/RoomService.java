@@ -1,13 +1,18 @@
 package nl.srhodenborgh.royalfruitresorts.service;
 
-import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
-import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
-import nl.srhodenborgh.royalfruitresorts.repository.RoomRepository;
 import nl.srhodenborgh.royalfruitresorts.dto.RoomDTO;
+import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
 import nl.srhodenborgh.royalfruitresorts.enums.ReservationStatus;
 import nl.srhodenborgh.royalfruitresorts.enums.RoomType;
 import nl.srhodenborgh.royalfruitresorts.model.Hotel;
+import nl.srhodenborgh.royalfruitresorts.model.Reservation;
 import nl.srhodenborgh.royalfruitresorts.model.Room;
+import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
+import nl.srhodenborgh.royalfruitresorts.repository.RoomRepository;
+import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
+import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +20,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,221 +30,281 @@ public class RoomService {
     @Autowired
     private HotelRepository hotelRepository;
     @Autowired
-    private ReservationRepository reservationRepository;
+    private InputValidator inputValidator;
+    @Autowired
+    private DataFormatter dataFormatter;
 
-    public enum Status { SUCCESS, FAILED};
+    private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
+
 
 
     // Create
-    public Room createRoom (Room room, long hotelId) {
+    public boolean createRoom (Room room, long hotelId) {
+        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
 
-
-        try {
-            Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
-            room.setHotel(hotel);
-            roomRepository.save(room);
-            System.out.println("Successfully created room on Id: " + room.getId());
-            return room;
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to create room. Cannot find hotel on Id: " + hotelId);
-        } catch (Exception e) {
-            System.err.println("Error while creating room");
-            System.err.println(e.getMessage());
+        if (hotel.isEmpty()) {
+            logger.error("Failed to create room. Hotel (id: {}) doesn't exist", hotelId);
+            return false;
         }
-        return null;
+
+        if (inputValidator.areRequiredFieldsInvalid(room)) {
+            logger.error("Failed to create room. Input fields are invalid");
+            return false;
+        }
+
+        dataFormatter.formatFields(room);
+
+        room.setHotel(hotel.get());
+        roomRepository.save(room);
+        logger.info("Successfully created room on Id: {}", room.getId());
+        return true;
     }
 
 
     // Read
     public Iterable<Room> getAllRooms() {
-        return roomRepository.findAll();
+        Iterable<Room> rooms = roomRepository.findAll();
+
+        if (!rooms.iterator().hasNext()) {
+            logger.error("No rooms found in database");
+        }
+
+        return rooms;
     }
 
     public Optional<Room> getRoom(long id) {
-        return roomRepository.findById(id);
-    }
+        Optional<Room> room = roomRepository.findById(id);
 
-
-    // Edit
-    public boolean editRoom(long id, Room updatedRoom, long hotelId) {
-        try {
-            Room room = roomRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("Cannot find room on Id: " + id));
-            Hotel hotel = hotelRepository.findById(hotelId)
-                    .orElseThrow(() -> new NoSuchElementException("Cannot find hotel on Id: " + hotelId));
-
-            if (updatedRoom.getRoomType() != null) {
-                room.setRoomType(updatedRoom.getRoomType());
-            }
-            if (updatedRoom.getNumBeds() != 0) {
-                room.setNumBeds(updatedRoom.getNumBeds());
-            }
-            room.setDescription(updatedRoom.getDescription());
-            room.setPrice(updatedRoom.getPrice());
-            room.setHotel(hotel);
-
-            roomRepository.save(room);
-            return true;
-
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to edit room. " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Error while changing password");
-            System.err.println(e.getMessage());
+        if (room.isEmpty()) {
+            logger.error("Failed to get room. Cannot find room (id: {})", id);
         }
-        return false;
+
+        return room;
     }
 
-    public Status setRoomDescription(long hotelId, String roomType, String description) {
-        try {
-            RoomType rtEnum = RoomType.valueOf(roomType.toUpperCase());
 
-            if (description == null) { description = ""; }
+    // Update
+    public boolean updateRoom(Room updatedRoom, long hotelId) {
+        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
+        Optional<Room> room = roomRepository.findById(updatedRoom.getId());
 
-            if (description.length() > 1000) {
-                System.err.println("Room description cannot contain more than 1000 characters");
-                return Status.FAILED;
-            }
+        if (hotel.isEmpty()) {
+            logger.error("Failed to update room. Cannot find hotel (id: {})", hotelId);
+            return false;
+        }
 
-            if (hotelRepository.findById(hotelId).isPresent()) {
-                Iterable<Room> rooms = roomRepository.findByHotelIdAndRoomType(hotelId, rtEnum);
+        if (room.isEmpty()) {
+            logger.error("Failed to update room. Cannot find room (id: {})", updatedRoom.getId());
+            return false;
+        }
 
-                for (Room room : rooms) {
-                    room.setDescription(description);
-                }
-                roomRepository.saveAll(rooms);
-                System.out.println("Successfully set descriptions of room type " + rtEnum + " of hotel " + hotelId);
-                return Status.SUCCESS;
-            } else {
-                System.err.println("Failed to set description of rooms. Cannot find hotel on Id: " + hotelId);
-            }
-        } catch (IllegalArgumentException e) {
-                System.err.println("Failed to set description of rooms. Room type should be SINGLE, DOUBLE, or FAMILY");
-            }
-        return Status.FAILED;
+        if (inputValidator.areRequiredFieldsInvalid(updatedRoom)) {
+            logger.error("Failed to update room (id: {}). Input fields are invalid", updatedRoom.getId());
+            return false;
+        }
+
+        dataFormatter.formatFields(updatedRoom);
+
+        room.get().setRoomType(updatedRoom.getRoomType());
+        room.get().setNumBeds(updatedRoom.getNumBeds());
+        room.get().setDescription(updatedRoom.getDescription());
+        room.get().setPrice(updatedRoom.getPrice());
+        room.get().setHotel(hotel.get());
+
+        roomRepository.save(room.get());
+        logger.info("Successfully updated room (id: {})", updatedRoom.getId());
+        return true;
     }
+
+
+
+
+
+    public boolean setRoomDescriptionByRoomType(long hotelId, String roomType, String description) {
+
+        RoomType roomTypeEnum = createRoomTypeEnum(roomType);
+        if (roomTypeEnum == null) return false;
+
+        if (description == null) description = "";
+
+        if (hotelRepository.findById(hotelId).isEmpty()) {
+            logger.error("Failed to set description of roomType {}. Cannot find hotel (id: {})", roomTypeEnum, hotelId);
+            return false;
+        }
+
+        Iterable<Room> rooms = roomRepository.findByHotelIdAndRoomType(hotelId, roomTypeEnum);
+        for (Room room : rooms) {
+            room.setDescription(description.trim());
+        }
+
+        roomRepository.saveAll(rooms);
+        logger.info("Successfully set descriptions of roomType {} of hotel (id: {})", roomTypeEnum, hotelId);
+        return true;
+
+    }
+
+    private RoomType createRoomTypeEnum(String roomTypeInput) {
+
+        // functie maakt een enum van de doorgegeven roomTypeInput indien het overeenkomt met de mogelijke roomTypes uit de enum class
+        roomTypeInput = roomTypeInput.toUpperCase();
+
+        for (RoomType roomType : RoomType.values()) {
+            if (roomType.toString().equals(roomTypeInput)) {
+                return RoomType.valueOf(roomTypeInput);
+
+            }
+        }
+
+        logger.error("Failed to set description of rooms. RoomType should be one of the following: {}", (Object) RoomType.values());
+        return null;
+    }
+
 
 
     // Delete
-    public void deleteRoom (long id){
+    public boolean deleteRoom (long id){
+        Optional<Room> room = roomRepository.findById(id);
+
+        if (room.isEmpty()) {
+            logger.error("Failed to delete room. Cannot find room (id: {})", id);
+            return false;
+        }
+
         roomRepository.deleteById(id);
+        logger.info("Successfully deleted room (id: {})", id);
+        return true;
     }
 
 
 
     // Andere methoden
-    public Iterable<RoomDTO> searchRooms (long hotelId, LocalDate cid, LocalDate cod, int adults, int children) {
-        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
+    public Iterable<RoomDTO> searchRooms (RoomSearchDTO query) {
 
-        if (hotel.isEmpty()) {
-            System.err.println("Cannot find hotel on Id: " + hotelId);
+        if (inputValidator.areRequiredFieldsInvalid(query)) {
+            logger.error("Failed to search for rooms. Input fields are invalid");
             return null;
         }
 
-        // Zoekt naar geschikte kamers op basis van aantal bedden
-        List<Room> suitableRooms = new ArrayList<>();
-        for (int i = 0; i < hotel.get().getRooms().size(); i++) {
-            if ((adults + children) <= hotel.get().getRooms().get(i).getNumBeds()) {
-                suitableRooms.add(hotel.get().getRooms().get(i));
-            }
+        Optional<Hotel> hotel = hotelRepository.findById(query.getHotelId());
+
+        if (hotel.isEmpty()) {
+            logger.error("Cannot find hotel (id: {})", query.getHotelId());
+            return null;
         }
 
-        // Hier komen de beschikbare kamers in
+        // Zoekt naar geschikte kamers op basis van aantal beschikbare bedden en zet het in een List
+        List<Room> suitableRooms = findSuitableRooms(hotel.get(), (query.getAdults() + query.getChildren()));
+
+        if (suitableRooms == null || suitableRooms.isEmpty()) {
+            logger.warn("No available rooms found");
+            return null;
+        }
+
+        // Stopt hier de beschikbare (niet-gereserveerde) kamers in
+        List<RoomDTO> availableRooms = findAvailableRooms(suitableRooms, query);
+
+        if (!availableRooms.isEmpty()) {
+            logger.info("Available rooms found. Returning list of available rooms");
+        } else {
+            logger.warn("No available rooms found");
+        }
+
+        return availableRooms;
+    }
+
+    private List<Room> findSuitableRooms(Hotel hotel, int numOfGuests) {
+
+        if (hotel.getRooms() == null)
+            return null;
+
+        // TODO: SQL Query hiervan maken in de repository
+        // Zoekt naar geschikte kamers op basis van aantal beschikbare bedden en zet het in suitableRooms List
+        List<Room> suitableRooms = new ArrayList<>();
+
+        for (Room room : hotel.getRooms()) {
+            if (numOfGuests <= room.getNumBeds()) {
+                suitableRooms.add(room);
+            }
+        }
+        return suitableRooms;
+    }
+
+    private List<RoomDTO> findAvailableRooms(List<Room> suitableRooms, RoomSearchDTO query) {
         List<RoomDTO> availableRooms = new ArrayList<>();
 
-        // Gaat elke kamer af van de geschikte kamers af
+        // Gaat elk geschikte kamer af om te kijken of er niet al een reservering of booking op staat
         for (Room suitableRoom : suitableRooms) {
-            // Indien de kamer beschikbaar is, wordt de totaalprijs berekend waarna de kamer in de availableRooms gezet
-            if ((checkAvailability(suitableRoom, cid, cod)) && (!isDuplicateRoom(suitableRoom, availableRooms))) {
+
+            // Checkt of de kamer beschikbaar is en niet een duplicaat is van een al-bestaande kamer in de availableRooms List
+            if ((checkAvailability(suitableRoom, query) && (!isDuplicateRoom(suitableRoom, availableRooms)))) {
                 RoomDTO room = new RoomDTO(suitableRoom);
-                room.setPrice(calculatePrice(room.getPrice(), cid, cod, children));
+
+                // Totaalprijs wordt berekend waarna de room in de availableRooms List wordt gezet
+                room.setPrice(calculateTotalPrice(room.getPrice(), query));
                 availableRooms.add(room);
             }
         }
 
-
-        if (availableRooms.isEmpty()) {
-            System.out.println("No available rooms found");
-        }
         return availableRooms;
     }
 
+    private boolean checkAvailability(Room suitableRoom, RoomSearchDTO query) {
+        // Gaat alle bestaande reserveringen per geschikte kamer af
+        for (Reservation reservation : suitableRoom.getReservation()) {
+            boolean cancelled = reservation.getReservationStatus() == ReservationStatus.CANCELLED;
 
-    private boolean checkAvailability(Room suitableRoom, LocalDate cid, LocalDate cod) {
-        // Gaat alle bestaande reserveringen per geschikte kamer af 
-        // Kijkt of er overlap is wat betreft ciDate en coDate tussen zoekopdracht en bestaande reserveringen
-        // Indien de boolean bij elke reservering true blijft en de reservering, komt het in de availableRooms List terecht
-        boolean available = true;
-        for (int i = 0; i < suitableRoom.getReservation().size(); i++) {
-            boolean cancelled = suitableRoom.getReservation().get(i).getReservationStatus() == ReservationStatus.CANCELLED;
-
-            // Stuurt available false als reservering overlapt en de status van de reservering niet CANCELLED is
-            if (suitableRoom.getReservation().get(i).getCiDate().isBefore(cid) &&
-                    suitableRoom.getReservation().get(i).getCoDate().isAfter(cid) &&
-                    !cancelled) {
-                available = false;
-                break;
-            } else if (suitableRoom.getReservation().get(i).getCiDate().isBefore(cod) &&
-                    suitableRoom.getReservation().get(i).getCoDate().isAfter(cod) &&
-                    !cancelled) {
-                available = false;
-                break;
-            } else if (suitableRoom.getReservation().get(i).getCiDate().isAfter(cid) &&
-                    suitableRoom.getReservation().get(i).getCoDate().isBefore(cod) &&
-                    !cancelled) {
-                available = false;
-                break;
-            } else if (suitableRoom.getReservation().get(i).getCiDate().isEqual(cid) &&
-                    suitableRoom.getReservation().get(i).getCoDate().isEqual(cod) &&
-                    !cancelled) {
-                available = false;
+            if (!cancelled && isOverlap(reservation, query)) {
+                return false;
             }
         }
-        return available;
+        return true;
     }
 
-    private double calculatePrice(double price, LocalDate cid, LocalDate cod, int children) {
-        long noDays = ChronoUnit.DAYS.between(cid, cod);
-        double totalPrice = (noDays * price);
+    private boolean isOverlap(Reservation reservation, RoomSearchDTO query) {
+        LocalDate resCI = reservation.getCiDate();
+        LocalDate resCO = reservation.getCoDate();
 
+        LocalDate queryCI = query.getCheckInDate();
+        LocalDate queryCO = query.getCheckOutDate();
+
+        // Kijkt of er overlap is wat betreft ciDate en coDate tussen reservering en zoekopdracht
+        return (resCI.isBefore(queryCO) && resCO.isAfter(queryCI)) ||
+                (resCI.isBefore(queryCI) && resCO.isAfter(queryCI)) ||
+                (resCI.isAfter(queryCI) && resCO.isBefore(queryCO)) ||
+                (resCI.isEqual(queryCI) && resCO.isEqual(queryCO));
+    }
+
+    private boolean isDuplicateRoom(Room room1, List<RoomDTO> roomList) {
+        if (roomList.isEmpty()) {
+            return false;
+        }
+
+        for (RoomDTO room2 : roomList) {
+
+            // checkt of er in de roomList een duplicaat is op basis van roomType, numBeds, description en price
+            // description is nullable, vandaar Objects
+            if (Objects.equals(room1.getRoomType(), room2.getRoomType()) &&
+                    room1.getNumBeds() == room2.getNumBeds() &&
+                    Objects.equals(room1.getDescription(), room2.getDescription()) &&
+                    room1.getPrice() == room2.getPrice()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private double calculateTotalPrice(double price, RoomSearchDTO query) {
+        long numOfDays = ChronoUnit.DAYS.between(query.getCheckInDate(), query.getCheckOutDate());
+        double totalPrice = (numOfDays * price);
+
+        // TODO: Settings (id, key, value, description) page met surcharge en loyalty points hoogte
         // Als er kinderen zijn, komt er een toeslag van 25 euro bovenop
-        if (children > 0) {
+        if (query.getChildren() > 0) {
             totalPrice += 25;
         }
         return totalPrice;
     }
 
-    private boolean isDuplicateRoom(Room evaluate, List<RoomDTO> roomList) {
 
-        if (roomList.isEmpty()) {
-            return false;
-        }
-
-        // checkt of er al een duplicaat in de lijst staat
-        for (RoomDTO r : roomList) {
-
-            // null pointer error omzeilen omdat description nullable is
-            if (evaluate.getDescription() == null && r.getDescription() != null ||
-                evaluate.getDescription() != null && r.getDescription() == null) {
-                continue;
-            }
-
-            if (evaluate.getDescription() != null && r.getDescription() != null) {
-                if (evaluate.getRoomType().equals(r.getRoomType()) &&
-                    evaluate.getNumBeds() == r.getNumBeds() &&
-                    evaluate.getDescription().equals(r.getDescription()) &&
-                    evaluate.getPrice() == r.getPrice()) {
-                    return true;
-                }
-
-            } else {
-                if (evaluate.getRoomType().equals(r.getRoomType()) &&
-                    evaluate.getNumBeds() == r.getNumBeds() &&
-                    evaluate.getPrice() == r.getPrice()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

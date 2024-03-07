@@ -33,7 +33,7 @@ public class HotelController {
 
 
     // Read
-    @GetMapping("/allhotels")
+    @GetMapping("/all-hotels")
     public Iterable<Hotel> getAllHotels() {
         return hotelService.getAllHotels();
     }
@@ -44,8 +44,8 @@ public class HotelController {
     }
 
     @GetMapping("/hotel/{id}/rooms")
-    public Iterable<Room> getRooms(@PathVariable ("id")long id) {
-        return hotelService.getRooms(id);
+    public Iterable<Room> getRoomsOfHotel(@PathVariable ("id")long id) {
+        return hotelService.getRoomsOfHotel(id);
     }
 
     @GetMapping("/hotel/{id}/reservations")

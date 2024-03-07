@@ -34,6 +34,7 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel")
     private List<Review> reviews = new ArrayList<>();
 
+    // TODO: Email en phoneNumber toevoegen, allebei nullable. ook in frontend met fixed @rfr.nl. Al gefixt in klassendiagram
 
 
     public long getId() {

@@ -46,6 +46,7 @@ public class HotelService {
         }
 
         dataFormatter.formatFields(hotel);
+
         hotelRepository.save(hotel);
         logger.info("Successfully created hotel on Id: {}", hotel.getId());
         return true;
@@ -76,7 +77,7 @@ public class HotelService {
     }
 
 
-    public Iterable<Room> getRooms(long hotelId) {
+    public Iterable<Room> getRoomsOfHotel(long hotelId) {
         Optional<Hotel> hotel = hotelRepository.findById(hotelId);
 
         if (hotel.isEmpty()) {
@@ -125,12 +126,12 @@ public class HotelService {
         Optional<Hotel> hotel = hotelRepository.findById(id);
 
         if (hotel.isEmpty()) {
-            logger.error("Failed to edit hotel. Cannot find hotel (id: {})", id);
+            logger.error("Failed to update hotel. Cannot find hotel (id: {})", id);
             return false;
         }
 
         if (inputValidator.areRequiredFieldsInvalid(updatedHotel)) {
-            logger.error("Failed to edit hotel (id: {}). Input fields are invalid", id);
+            logger.error("Failed to update hotel (id: {}). Input fields are invalid", id);
             return false;
         }
 
@@ -145,7 +146,7 @@ public class HotelService {
         hotel.get().setDescription(updatedHotel.getDescription());
 
         hotelRepository.save(hotel.get());
-        logger.info("Successfully edited hotel (id: {})", id);
+        logger.info("Successfully updated hotel (id: {})", id);
         return true;
     }
 
@@ -168,9 +169,6 @@ public class HotelService {
 
 
     // Andere methodes
-
-
-
 
 }
 

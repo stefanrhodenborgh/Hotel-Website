@@ -35,6 +35,7 @@ public class Reservation {
     private Booking booking;
 
 
+    // TODO: ciDate en coDate omzetten in checkInDate en checkOutDate, ook front end
 
 
     public long getId() {

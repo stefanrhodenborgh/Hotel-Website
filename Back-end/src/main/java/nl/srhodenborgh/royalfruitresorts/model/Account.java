@@ -40,6 +40,7 @@ public class Account {
     public static final long OWNER_HOTEL_ID = 0L;
 
 
+
     public long getId() {
         return id;
     }

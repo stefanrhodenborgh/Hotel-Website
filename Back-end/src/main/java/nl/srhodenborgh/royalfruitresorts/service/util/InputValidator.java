@@ -1,6 +1,9 @@
 package nl.srhodenborgh.royalfruitresorts.service.util;
 
+import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
 import nl.srhodenborgh.royalfruitresorts.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,11 +22,10 @@ public class InputValidator {
      */
     private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
 
+    private static final Logger logger = LoggerFactory.getLogger(InputValidator.class);
 
 
-    private boolean isFieldInvalid(String fieldValue, String regexPattern) {
-        return fieldValue == null || !fieldValue.matches(regexPattern);
-    }
+
 
 
     // Overloaded methodes die checken of de fields correct ingevoerd zijn volgens de regex
@@ -39,16 +41,17 @@ public class InputValidator {
     }
 
 
-    private boolean areRequiredFieldsInvalid(Room room) {
+    public boolean areRequiredFieldsInvalid(Room room) {
         // Nullable: description
 
         return room.getRoomType() == null ||
                 room.getNumBeds() <= 0 ||
-                room.getPrice() <= 0.0;
+                room.getPrice() <= 0.0 ||
+                room.getDescription().length() > 1000;
     }
 
 
-    private boolean areRequiredFieldsInvalid(Reservation reservation) {
+    public boolean areRequiredFieldsInvalid(Reservation reservation) {
         // Nullable: Special Request, uuid
         // Surcharge is op default false
 
@@ -60,13 +63,13 @@ public class InputValidator {
     }
 
 
-    private boolean areRequiredFieldsInvalid(Booking booking) {
+    public boolean areRequiredFieldsInvalid(Booking booking) {
         // Date wordt automatisch toegewezen bij het creëren van een booking
         return booking.getPaymentMethod() == null;
     }
 
 
-    private boolean areRequiredFieldsInvalid(User user) {
+    public boolean areRequiredFieldsInvalid(User user) {
         // Nullable: phoneNumber
 
         return isFieldInvalid(user.getFirstName(), NAME_REGEX) ||
@@ -83,7 +86,7 @@ public class InputValidator {
     }
 
 
-    private boolean areRequiredFieldsInvalid(Account account) {
+    public boolean areRequiredFieldsInvalid(Account account) {
         // Nullable: token
 
         return isFieldInvalid(account.getPassword(), PASSWORD_REGEX)  ||
@@ -96,7 +99,7 @@ public class InputValidator {
     }
 
 
-    private boolean areRequiredFieldsInvalid(Review review) {
+    public boolean areRequiredFieldsInvalid(Review review) {
         // Nullable: comment
         // Date wordt automatisch toegewezen bij het creëren van een review
 
@@ -104,6 +107,19 @@ public class InputValidator {
                 review.getRating() < 1.0 ||
                 review.getRating() > 5.0;
     }
+
+
+    public boolean areRequiredFieldsInvalid(RoomSearchDTO query) {
+        return query.getCheckInDate().isAfter(query.getCheckOutDate()) ||
+                query.getCheckInDate().isEqual(query.getCheckOutDate()) ||
+                query.getAdults() < 1;
+    }
+
+
+    private boolean isFieldInvalid(String fieldValue, String regexPattern) {
+        return fieldValue == null || !fieldValue.matches(regexPattern);
+    }
+
 
 
     private boolean isPhoneNumberInvalid(String phoneNumber) {

@@ -9,4 +9,5 @@ import org.springframework.stereotype.Component;
 public interface RoomRepository extends CrudRepository<Room, Long> {
 
     Iterable<Room> findByHotelIdAndRoomType(long hotelId, RoomType roomType);
+
 }

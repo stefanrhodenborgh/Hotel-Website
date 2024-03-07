@@ -1,22 +1,13 @@
 package nl.srhodenborgh.royalfruitresorts.controller;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-import nl.srhodenborgh.royalfruitresorts.model.Room;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import nl.srhodenborgh.royalfruitresorts.dto.RoomDTO;
+import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
+import nl.srhodenborgh.royalfruitresorts.model.Room;
 import nl.srhodenborgh.royalfruitresorts.service.RoomService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
@@ -27,8 +18,8 @@ public class RoomController {
 
 
     // Create
-    @PostMapping("/createroom")
-    public Room createRoom (@RequestBody Room room, @RequestParam long hotelId) {
+    @PostMapping("/create-room")
+    public boolean createRoom (@RequestBody Room room, @RequestParam long hotelId) {
 
 //        //BEVEILIGEN MET HTTPREQUEST
 //    	Account account = (Account)request.getAttribute("YC_ACCOUNT");
@@ -45,7 +36,7 @@ public class RoomController {
 
 
     // Read
-    @GetMapping("/allrooms")
+    @GetMapping("/all-rooms")
     public Iterable<Room> getAllRooms() {
         return roomService.getAllRooms();
     }
@@ -55,28 +46,29 @@ public class RoomController {
         return roomService.getRoom(id);
     }
 
-    @GetMapping("/searchrooms/{hotelId}")
-    public Iterable<RoomDTO> searchRooms(@PathVariable ("hotelId") long hotelId, @RequestParam LocalDate cid, @RequestParam LocalDate cod, @RequestParam int adults, @RequestParam int children) {
-        return roomService.searchRooms(hotelId, cid, cod, adults, children);
+    @GetMapping("/search-rooms")
+    public Iterable<RoomDTO> searchRooms(@RequestBody RoomSearchDTO roomSearchDTO) {
+        // TODO: parameters fixen in Front end naar RoomSearchDTO
+        return roomService.searchRooms(roomSearchDTO);
     }
 
 
-    // Edit
-    @PutMapping("/editroom/{id}")
-    public boolean editRoom (@PathVariable ("id") long id, @RequestBody Room updatedRoom, @RequestParam long hotelId){
-        return roomService.editRoom(id, updatedRoom, hotelId);
+    // Update
+    @PutMapping("/update-room")
+    public boolean updateRoom (@RequestBody Room updatedRoom, @RequestParam long hotelId){
+        return roomService.updateRoom(updatedRoom, hotelId);
     }
 
     @PutMapping("/set-roomdescription/{hotelId}")
-    public RoomService.Status setRoomDescription(@PathVariable ("hotelId") long hotelId, @RequestParam String roomType, @RequestBody(required = false) String description) {
-        return roomService.setRoomDescription(hotelId, roomType, description);
+    public boolean setRoomDescriptionsByRoomType(@PathVariable ("hotelId") long hotelId, @RequestParam String roomType, @RequestBody(required = false) String description) {
+        return roomService.setRoomDescriptionByRoomType(hotelId, roomType, description);
     }
 
 
 
     // Delete
-    @DeleteMapping ("/deleteroom/{id}")
-    public void deleteRoom(@PathVariable ("id") long id){
-        roomService.deleteRoom(id);
+    @DeleteMapping ("/delete-room/{id}")
+    public boolean deleteRoom(@PathVariable ("id") long id){
+        return roomService.deleteRoom(id);
     }
 }
