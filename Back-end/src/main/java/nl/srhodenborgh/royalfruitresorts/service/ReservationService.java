@@ -71,7 +71,7 @@ public class ReservationService {
 
     public List<ReservationDTO> sortList(List<ReservationDTO> list, String sort) {
         // Als er geen sort-waarde is meegegeven, wordt er gesorteerd op roomId (default)
-        // TODO: dit soor JPA Query in repository laten doen
+        // TODO: dit door JPA Query in repository laten doen
         if (sort == null) { sort = ""; }
         switch (sort) {
             case "hotelId":

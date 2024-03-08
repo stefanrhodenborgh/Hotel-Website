@@ -48,7 +48,6 @@ public class RoomController {
 
     @GetMapping("/search-rooms")
     public Iterable<RoomDTO> searchRooms(@RequestBody RoomSearchDTO roomSearchDTO) {
-        // TODO: parameters fixen in Front end naar RoomSearchDTO omzetten
         return roomService.searchRooms(roomSearchDTO);
     }
 

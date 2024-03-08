@@ -86,6 +86,15 @@ async function searchRooms() {
         children
     };
 
+    // DEZE MOET EFFICIENTER KUNNEN WORDEN GESCHREVEN. WORK IN PROGRESS!!
+    const searchQuery = {
+        "hotelId": hotelId,
+        "checkInDate": checkInDate,
+        "checkOutDate": checkOutDate,
+        "adults": adults,
+        "children": children
+    }
+
 
     // Stopt deze functie als er minder dan 1 volwassene is ingevoerd
     if (adults < 1) {
@@ -95,8 +104,14 @@ async function searchRooms() {
 
     try {
         // URL van de endpoint in back-end
-        const urllocal = url+`/search-rooms/${hotelId}?cid=${checkInDate}&cod=${checkOutDate}&adults=${adults}&children=${children}`;
-        const response = await fetch(urllocal)
+        const urllocal = url + "/search-rooms";
+        const response = await fetch(urllocal, {
+            method: "GET",
+            headers: {
+                "Content_Type": "application/json", 
+            },
+            body: JSON.stringify(searchQuery),
+        })
 
         // Checkt of hij een response kan krijgen van de URL
         if (!response.ok) {
