@@ -13,9 +13,9 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(nullable = false)
-    private LocalDate ciDate;
+    private LocalDate checkInDate;
     @Column(nullable = false)
-    private LocalDate coDate;
+    private LocalDate checkOutDate;
     @Column(nullable = false, length = 2)
     private int adults;
     @Column(nullable = false, length = 2)
@@ -46,20 +46,20 @@ public class Reservation {
         this.id = id;
     }
 
-    public LocalDate getCiDate() {
-        return ciDate;
+    public LocalDate getCheckInDate() {
+        return checkInDate;
     }
 
-    public void setCiDate(LocalDate ciDate) {
-        this.ciDate = ciDate;
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
     }
 
-    public LocalDate getCoDate() {
-        return coDate;
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
     }
 
-    public void setCoDate(LocalDate coDate) {
-        this.coDate = coDate;
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public int getAdults() {

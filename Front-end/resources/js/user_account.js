@@ -118,7 +118,7 @@ async function displayReservations(time, isCheckboxChecked) {
         reservationHTML += `
         <tr id="reservation-${res[i].reservation.id}" class="text-white">
             <td class="res-data">${res[i].hotelName}</td>
-            <td class="res-data">${res[i].reservation.ciDate} - ${res[i].reservation.coDate}</td>
+            <td class="res-data">${res[i].reservation.checkInDate} - ${res[i].reservation.checkOutDate}</td>
             <td class="res-data">${status}</td>
         `;
         

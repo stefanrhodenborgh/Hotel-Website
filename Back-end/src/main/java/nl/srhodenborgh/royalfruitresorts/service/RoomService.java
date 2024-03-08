@@ -243,13 +243,13 @@ public class RoomService {
     }
 
     private boolean isOverlap(Reservation reservation, RoomSearchDTO query) {
-        LocalDate resCI = reservation.getCiDate();
-        LocalDate resCO = reservation.getCoDate();
+        LocalDate resCI = reservation.getCheckInDate();
+        LocalDate resCO = reservation.getCheckOutDate();
 
         LocalDate queryCI = query.getCheckInDate();
         LocalDate queryCO = query.getCheckOutDate();
 
-        // Kijkt of er overlap is wat betreft ciDate en coDate tussen reservering en zoekopdracht
+        // Kijkt of er overlap is wat betreft checkInDate en checkOutDate tussen reservering en zoekopdracht
         return (resCI.isBefore(queryCO) && resCO.isAfter(queryCI)) ||
                 (resCI.isBefore(queryCI) && resCO.isAfter(queryCI)) ||
                 (resCI.isAfter(queryCI) && resCO.isBefore(queryCO)) ||

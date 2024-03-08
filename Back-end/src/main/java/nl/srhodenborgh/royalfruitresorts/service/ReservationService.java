@@ -89,11 +89,11 @@ public class ReservationService {
             case "reservationId":
                 list.sort(Comparator.comparingLong(dto -> dto.getReservation().getId()));
                 break;
-            case "ciDate":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getCiDate()));
+            case "checkInDate":
+                list.sort(Comparator.comparing(dto -> dto.getReservation().getCheckInDate()));
                 break;
-            case "coDate":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getCoDate()));
+            case "checkOutDate":
+                list.sort(Comparator.comparing(dto -> dto.getReservation().getCheckOutDate()));
                 break;
             case "adults":
                 list.sort(Comparator.comparingInt(dto -> dto.getReservation().getAdults()));
@@ -166,11 +166,11 @@ public class ReservationService {
                     .orElseThrow(() -> new NoSuchElementException("Cannot find room on Id: " + updatedReservation.getRoomId()));
             reservation.setRoom(room);
 
-            if (updatedReservation.getReservation().getCiDate() != null) {
-                reservation.setCiDate(updatedReservation.getReservation().getCiDate());
+            if (updatedReservation.getReservation().getCheckInDate() != null) {
+                reservation.setCheckInDate(updatedReservation.getReservation().getCheckInDate());
             }
-            if (updatedReservation.getReservation().getCoDate() != null) {
-                reservation.setCoDate(updatedReservation.getReservation().getCoDate());
+            if (updatedReservation.getReservation().getCheckOutDate() != null) {
+                reservation.setCheckOutDate(updatedReservation.getReservation().getCheckOutDate());
             }
             if (updatedReservation.getReservation().getAdults() != 0) {
                 reservation.setAdults(updatedReservation.getReservation().getAdults());

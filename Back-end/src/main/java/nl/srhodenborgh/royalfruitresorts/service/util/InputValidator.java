@@ -55,8 +55,8 @@ public class InputValidator {
         // Nullable: Special Request, uuid
         // Surcharge is op default false
 
-        return reservation.getCiDate() == null ||
-                reservation.getCoDate() == null ||
+        return reservation.getCheckInDate() == null ||
+                reservation.getCheckOutDate() == null ||
                 reservation.getAdults() <= 0 ||
                 reservation.getChildren() < 0 ||
                 reservation.getReservationStatus() == null;

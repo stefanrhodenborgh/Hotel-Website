@@ -72,7 +72,7 @@ public class UserService {
             for (Reservation reservation : reservations){
                 dtoList.add(new ReservationDTO(reservation));
             }
-            dtoList.sort(Comparator.comparing(dto -> dto.getReservation().getCiDate()));
+            dtoList.sort(Comparator.comparing(dto -> dto.getReservation().getCheckInDate()));
 //            System.out.println("Returning list of reservations from user with Id: " + id);
         }
         else {

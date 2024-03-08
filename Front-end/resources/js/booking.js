@@ -71,8 +71,8 @@ async function searchRooms() {
 
     // Parameters om de beschikbare kamers mee te zoeken
     const hotelId = hotelDropdown.value;
-    const ciDate = checkInInput.value;
-    const coDate = checkOutInput.value;
+    const checkInDate = checkInInput.value;
+    const checkOutDate = checkOutInput.value;
     const adults = adultsInput.value;
     const children = childrenInput.value;
 
@@ -80,8 +80,8 @@ async function searchRooms() {
     const query = {
         hotelId,
         hotelName,
-        ciDate,
-        coDate,
+        checkInDate,
+        checkOutDate,
         adults,
         children
     };
@@ -95,7 +95,7 @@ async function searchRooms() {
 
     try {
         // URL van de endpoint in back-end
-        const urllocal = url+`/search-rooms/${hotelId}?cid=${ciDate}&cod=${coDate}&adults=${adults}&children=${children}`;
+        const urllocal = url+`/search-rooms/${hotelId}?cid=${checkInDate}&cod=${checkOutDate}&adults=${adults}&children=${children}`;
         const response = await fetch(urllocal)
 
         // Checkt of hij een response kan krijgen van de URL

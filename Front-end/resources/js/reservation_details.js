@@ -28,8 +28,8 @@ function getBookingDetails(){
         <h2 class="mb-4">Booking Details</h2>
         <p>${query.hotelName}</p>
         <p>${roomType}</p>
-        <p>Check-in: ${query.ciDate}</p>
-        <p>Check-out: ${query.coDate}</p>
+        <p>Check-in: ${query.checkInDate}</p>
+        <p>Check-out: ${query.checkOutDate}</p>
         <p>${query.adults} adults, ${query.children} children</p>
         <hr class="col-10 mt-3 mb-4">
 
@@ -268,8 +268,8 @@ function createReservation(userId) {
         "hotelId": query.hotelId,
         "roomId": query.roomId,
         "reservation": {
-            "ciDate": query.ciDate,
-            "coDate": query.coDate,
+            "checkInDate": query.checkInDate,
+            "checkOutDate": query.checkOutDate,
             "adults": query.adults,
             "children": query.children,
             "specialRequest": document.getElementById("specialRequest").value
