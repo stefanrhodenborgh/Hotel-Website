@@ -112,7 +112,8 @@ public class InputValidator {
     public boolean areRequiredFieldsInvalid(RoomSearchDTO query) {
         return query.getCheckInDate().isAfter(query.getCheckOutDate()) ||
                 query.getCheckInDate().isEqual(query.getCheckOutDate()) ||
-                query.getAdults() < 1;
+                query.getAdults() < 1 ||
+                query.getChildren() < 0;
     }
 
 

@@ -127,7 +127,7 @@ public class RoomService {
 
         if (description == null) description = "";
 
-        if (hotelRepository.findById(hotelId).isEmpty()) {
+        if (!hotelRepository.existsById(hotelId)) {
             logger.error("Failed to set description of roomType {}. Cannot find hotel (id: {})", roomTypeEnum, hotelId);
             return false;
         }
@@ -185,17 +185,15 @@ public class RoomService {
             return null;
         }
 
-        Optional<Hotel> hotel = hotelRepository.findById(query.getHotelId());
-
-        if (hotel.isEmpty()) {
+        if (!hotelRepository.existsById(query.getHotelId())) {
             logger.error("Cannot find hotel (id: {})", query.getHotelId());
             return null;
         }
 
         // Zoekt naar geschikte kamers op basis van aantal beschikbare bedden en zet het in een List
-        List<Room> suitableRooms = findSuitableRooms(hotel.get(), (query.getAdults() + query.getChildren()));
+        Iterable<Room> suitableRooms = roomRepository.findSuitableRooms(query.getHotelId(), (query.getAdults() + query.getChildren()));
 
-        if (suitableRooms == null || suitableRooms.isEmpty()) {
+        if (!suitableRooms.iterator().hasNext()) {
             logger.warn("No available rooms found");
             return null;
         }
@@ -212,24 +210,8 @@ public class RoomService {
         return availableRooms;
     }
 
-    private List<Room> findSuitableRooms(Hotel hotel, int numOfGuests) {
 
-        if (hotel.getRooms() == null)
-            return null;
-
-        // TODO: SQL Query hiervan maken in de repository
-        // Zoekt naar geschikte kamers op basis van aantal beschikbare bedden en zet het in suitableRooms List
-        List<Room> suitableRooms = new ArrayList<>();
-
-        for (Room room : hotel.getRooms()) {
-            if (numOfGuests <= room.getNumBeds()) {
-                suitableRooms.add(room);
-            }
-        }
-        return suitableRooms;
-    }
-
-    private List<RoomDTO> findAvailableRooms(List<Room> suitableRooms, RoomSearchDTO query) {
+    private List<RoomDTO> findAvailableRooms(Iterable<Room> suitableRooms, RoomSearchDTO query) {
         List<RoomDTO> availableRooms = new ArrayList<>();
 
         // Gaat elk geschikte kamer af om te kijken of er niet al een reservering of booking op staat
@@ -298,7 +280,7 @@ public class RoomService {
         long numOfDays = ChronoUnit.DAYS.between(query.getCheckInDate(), query.getCheckOutDate());
         double totalPrice = (numOfDays * price);
 
-        // TODO: Settings (id, key, value, description) page met surcharge en loyalty points hoogte
+        // TODO: Settings (id, key, value, description) page met surcharge en loyalty points hoogte en loyalty start
         // Als er kinderen zijn, komt er een toeslag van 25 euro bovenop
         if (query.getChildren() > 0) {
             totalPrice += 25;
