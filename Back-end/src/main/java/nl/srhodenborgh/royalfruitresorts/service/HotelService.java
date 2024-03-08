@@ -89,7 +89,7 @@ public class HotelService {
     }
 
 
-    // TODO: reservationDTO 1-dimensionaal maken en deze methode fixen
+    // TODO: reservationDTO 1-dimensionaal maken en deze methode fixen. JPA Query maken!
     public Iterable<ReservationDTO> getReservationsOfHotel(long id){
         try {
             Iterable<Reservation> reservations = reservationRepository.findReservationsOfHotel(id);

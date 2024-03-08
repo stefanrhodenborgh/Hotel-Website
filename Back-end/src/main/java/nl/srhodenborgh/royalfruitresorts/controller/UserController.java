@@ -26,14 +26,14 @@ public class UserController {
 
 
     // Create
-    @PostMapping("/createuser")
-    public Long createUser (@RequestBody User user) {
+    @PostMapping("/create-user")
+    public boolean createUser (@RequestBody User user) {
         return userService.createUser(user);
     }
 
 
     // Read
-    @GetMapping("/allusers")
+    @GetMapping("/all-users")
     public Iterable<User> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -44,22 +44,22 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reservations")
-    public Iterable<ReservationDTO> findReservationsOfUser(@PathVariable ("id") long id, @RequestParam(required = false) String pastOrFuture) {
-        // Voer als parameter "past" in of "future". default = future
-        return userService.findReservationsOfUser(id, pastOrFuture);
+    public Iterable<ReservationDTO> findReservationsOfUser(@PathVariable ("id") long id, @RequestParam(required = false) String pastOrPresent) {
+        // Voer als parameter "past" in of "present"(=default)
+        return userService.findReservationsOfUser(id, pastOrPresent);
     }
 
 
-    // Edit
-    @PutMapping ("/edituser/{id}")
-    public boolean editUser (@PathVariable ("id") long id, @RequestBody User updatedUser) {
-        return userService.editUser(id, updatedUser);
+    // Update
+    @PutMapping ("/update-user/{id}")
+    public boolean updateUser(@PathVariable ("id") long id, @RequestBody User updatedUser) {
+        return userService.updateUser(id, updatedUser);
     }
 
 
     // Delete
-    @DeleteMapping ("/deleteuser/{id}")
-    public void deleteUser(@PathVariable ("id") long id) {
-        userService.deleteUser(id);
+    @DeleteMapping ("/delete-user/{id}")
+    public boolean deleteUser(@PathVariable ("id") long id) {
+        return userService.deleteUser(id);
     }
 }

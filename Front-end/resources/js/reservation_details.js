@@ -212,7 +212,7 @@ function getForm() {
 
 function createUser(user) {
 
-    return fetch(url + '/createuser', {
+    return fetch(url + '/create-user', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

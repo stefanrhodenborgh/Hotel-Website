@@ -34,7 +34,7 @@ public class User {
     @Column(length = 50)
     private String phoneNumber;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Reservation> reservation = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
     @OneToOne(optional = true, mappedBy = "user")
     private Account account;
 
@@ -129,12 +129,12 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<Reservation> getReservation() {
-        return reservation;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setReservation(List<Reservation> reservation) {
-        this.reservation = reservation;
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @JsonIgnore
