@@ -22,8 +22,6 @@ public class InputValidator {
      */
     private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
 
-    private static final Logger logger = LoggerFactory.getLogger(InputValidator.class);
-
 
 
 
@@ -88,7 +86,7 @@ public class InputValidator {
 
     public boolean areRequiredFieldsInvalid(Account account) {
         // Nullable: token
-
+        // TODO: loyaltypoints en role weghalen. HotelID ook?
         return isFieldInvalid(account.getPassword(), PASSWORD_REGEX)  ||
                 account.getLoyaltyPoints() < 0 ||
                 account.getRole() == null ||
@@ -125,5 +123,13 @@ public class InputValidator {
 
     private boolean isPhoneNumberInvalid(String phoneNumber) {
         return !phoneNumber.matches(PHONE_NUMBER_REGEX);
+    }
+
+
+    public boolean isPasswordInvalid(String newPassword) {
+
+        return isFieldInvalid(newPassword, PASSWORD_REGEX) ||
+                newPassword.length() > 100 ||
+                newPassword.isBlank();
     }
 }

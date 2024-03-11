@@ -19,6 +19,8 @@ import nl.srhodenborgh.royalfruitresorts.dto.ReservationDTO;
 import nl.srhodenborgh.royalfruitresorts.model.Review;
 import nl.srhodenborgh.royalfruitresorts.model.Room;
 
+import javax.swing.text.html.Option;
+
 @Service
 public class HotelService {
     @Autowired
@@ -67,25 +69,25 @@ public class HotelService {
 
 
     public Optional<Hotel> getHotel(long id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
+        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
 
-        if (hotel.isEmpty()) {
+        if (hotelOptional.isEmpty()) {
             logger.error("Failed to get hotel. Cannot find hotel (id: {})", id);
         }
 
-        return hotel;
+        return hotelOptional;
     }
 
 
     public Iterable<Room> getRoomsOfHotel(long hotelId) {
-        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
+        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
 
-        if (hotel.isEmpty()) {
+        if (hotelOptional.isEmpty()) {
             logger.error("Failed to get rooms. Cannot find hotel (id: {})", hotelId);
             return null;
         }
 
-        return new ArrayList<>(hotel.get().getRooms());
+        return new ArrayList<>(hotelOptional.get().getRooms());
     }
 
 
@@ -110,9 +112,16 @@ public class HotelService {
 
 
     public Iterable<Review> getReviewsOfHotel(long id) {
-        Iterable<Review> reviews = reviewRepository.getReviewsFromHotel(id);
+        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
 
-        if (!reviews.iterator().hasNext()) {
+        if (hotelOptional.isEmpty()) {
+            logger.error("Failed to get reviews. Cannot find hotel (id: {})", id);
+            return null;
+        }
+
+        List<Review> reviews = hotelOptional.get().getReviews();
+
+        if (reviews.isEmpty()) {
             logger.warn("No reviews found of hotel (id: {})", id);
         }
 
@@ -123,9 +132,9 @@ public class HotelService {
 
     // Update
     public boolean updateHotel(long id, Hotel updatedHotel)  {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
+        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
 
-        if (hotel.isEmpty()) {
+        if (hotelOptional.isEmpty()) {
             logger.error("Failed to update hotel. Cannot find hotel (id: {})", id);
             return false;
         }
@@ -136,16 +145,17 @@ public class HotelService {
         }
 
         dataFormatter.formatFields(updatedHotel);
+        Hotel hotel = hotelOptional.get();
 
-        hotel.get().setName(updatedHotel.getName());
-        hotel.get().setStreet(updatedHotel.getStreet());
-        hotel.get().setHouseNumber(updatedHotel.getHouseNumber());
-        hotel.get().setZipCode(updatedHotel.getZipCode());
-        hotel.get().setCity(updatedHotel.getCity());
-        hotel.get().setCountry(updatedHotel.getCountry());
-        hotel.get().setDescription(updatedHotel.getDescription());
+        hotel.setName(updatedHotel.getName());
+        hotel.setStreet(updatedHotel.getStreet());
+        hotel.setHouseNumber(updatedHotel.getHouseNumber());
+        hotel.setZipCode(updatedHotel.getZipCode());
+        hotel.setCity(updatedHotel.getCity());
+        hotel.setCountry(updatedHotel.getCountry());
+        hotel.setDescription(updatedHotel.getDescription());
 
-        hotelRepository.save(hotel.get());
+        hotelRepository.save(hotel);
         logger.info("Successfully updated hotel (id: {})", id);
         return true;
     }
@@ -154,9 +164,9 @@ public class HotelService {
 
     //Delete
     public boolean deleteHotel (long id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
+        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
 
-        if (hotel.isEmpty()) {
+        if (hotelOptional.isEmpty()) {
             logger.error("Failed to delete hotel. Cannot find hotel (id: {})", id);
             return false;
         }

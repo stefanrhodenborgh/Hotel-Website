@@ -65,13 +65,13 @@ public class UserService {
     }
 
     public Optional<User> getUser(long id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (user.isEmpty()) {
+        if (userOptional.isEmpty()) {
             logger.error("Failed to get user. Cannot find user (id: {})", id);
         }
 
-        return user;
+        return userOptional;
     }
 
     public Iterable<ReservationDTO> findReservationsOfUser(long id, String pastOrPresent) {
@@ -102,9 +102,9 @@ public class UserService {
 
     // Update
     public boolean updateUser(long id, User updatedUser) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (user.isEmpty()) {
+        if (userOptional.isEmpty()) {
             logger.error("Failed to update user. Cannot find user (id: {})", id);
             return false;
         }
@@ -115,19 +115,20 @@ public class UserService {
         }
 
         dataFormatter.formatFields(updatedUser);
+        User user = userOptional.get();
 
-        user.get().setFirstName(updatedUser.getFirstName());
-        user.get().setLastName(updatedUser.getLastName());
-        user.get().setDateOfBirth(updatedUser.getDateOfBirth());
-        user.get().setStreet(updatedUser.getStreet());
-        user.get().setHouseNumber(updatedUser.getHouseNumber());
-        user.get().setZipCode(updatedUser.getZipCode());
-        user.get().setCity(updatedUser.getCity());
-        user.get().setCountry(updatedUser.getCountry());
-        user.get().setEmail(updatedUser.getEmail());
-        user.get().setPhoneNumber(updatedUser.getPhoneNumber());
+        user.setFirstName(updatedUser.getFirstName());
+        user.setLastName(updatedUser.getLastName());
+        user.setDateOfBirth(updatedUser.getDateOfBirth());
+        user.setStreet(updatedUser.getStreet());
+        user.setHouseNumber(updatedUser.getHouseNumber());
+        user.setZipCode(updatedUser.getZipCode());
+        user.setCity(updatedUser.getCity());
+        user.setCountry(updatedUser.getCountry());
+        user.setEmail(updatedUser.getEmail());
+        user.setPhoneNumber(updatedUser.getPhoneNumber());
 
-        userRepository.save(user.get());
+        userRepository.save(user);
         logger.info("Successfully updated user (id: {})", id);
         return true;
     }
@@ -135,16 +136,16 @@ public class UserService {
 
     // Delete
     public boolean deleteUser(long id) {
-        // TODO: Indien er eem account is moet deze ook loskoppelen om user te kunnen verwijderen
-        Optional<User> user = userRepository.findById(id);
+        // TODO: Indien er een account is moet deze ook loskoppelen om user te kunnen verwijderen
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (user.isEmpty()) {
+        if (userOptional.isEmpty()) {
             logger.error("Failed to delete user. Cannot find user (id: {})", id);
             return false;
         }
 
-        if (user.get().getReservations() != null) {
-            cancelBookingsAndReservations(user.get());
+        if (userOptional.get().getReservations() != null) {
+            cancelBookingsAndReservations(userOptional.get());
         }
 
         userRepository.deleteById(id);

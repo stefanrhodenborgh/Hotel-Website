@@ -7,6 +7,8 @@ import nl.srhodenborgh.royalfruitresorts.model.Account;
 import nl.srhodenborgh.royalfruitresorts.model.Review;
 import nl.srhodenborgh.royalfruitresorts.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,25 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
     @Autowired
     private AccountService accountService;
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 
 
     // Create
-    @PostMapping("/create-account/{userId}")
-    public AccountService.Status createAccount(@PathVariable ("userId") long userId, @RequestBody Account account) {
-        return accountService.createAccount(userId, account);
-    }
-
     @PostMapping("/create-account")
-    public Long createAccount2(@RequestBody Account account) {
-        return accountService.createAccount2(account);
+    public Long createAccount(@RequestBody Account account) {
+        return accountService.createAccount(account);
     }
 
-
-    @PostMapping("/login")
-    public Account login(@RequestBody AccountDTO accountDTO) {
-        return accountService.login(accountDTO.getEmail(), accountDTO.getPassword());
-    }
 
 
     // Read
@@ -59,39 +52,21 @@ public class AccountController {
         return accountService.getAccountFromToken(request);
     }
 
-
     @GetMapping("/account/{id}/reviews")
     public Iterable<Review> getReviewsFromAccount(@PathVariable ("id") long id) {
-        Optional<Account> accountOptional = accountService.getAccount(id);
-        if (accountOptional.isPresent()) {
-        	Account account = accountOptional.get();
-
-        	return account.getReviews();
-        }
-
-        return null;
+        return accountService.getReviewsFromAccount(id);
     }
 
 
 
 
-    // Edit
+    // Update
     @PutMapping("/account/change-password")
     public boolean changePassword(@RequestBody String newPassword, HttpServletRequest request) {
         Account account = (Account) request.getAttribute("YC_ACCOUNT");
 
         if (account == null) {
-            System.err.println("Invalid Token");
-            return false;
-        }
-
-        if (newPassword.length() > 100) {
-            System.err.println("Password cannot have more than 100 characters");
-            return false;
-        }
-
-        if (newPassword.isBlank()) {
-            System.err.println("Password cannot be blank");
+            logger.error("Failed to change password. Token is invalid");
             return false;
         }
 
@@ -101,16 +76,22 @@ public class AccountController {
 
     // Delete
     @DeleteMapping("/delete-account/{id}")
-    public AccountService.Status deleteAccount(@PathVariable ("id") long id) {
+    public boolean deleteAccount(@PathVariable ("id") long id) {
         return accountService.deleteAccount(id);
     }
 
 
 
     // Andere methodes
+    @PostMapping("/login")
+    public Account login(@RequestBody AccountDTO accountDTO) {
+        return accountService.login(accountDTO.getEmail(), accountDTO.getPassword());
+    }
+
     @PostMapping("is-email-available")
     public boolean isEmailAvailable(@RequestBody String email) {
         return accountService.isEmailAvailable(email);
     }
+
 }
 

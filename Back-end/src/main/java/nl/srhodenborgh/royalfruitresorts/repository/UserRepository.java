@@ -10,8 +10,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface UserRepository extends CrudRepository<User, Long> {
 
-    @Query(value = "SELECT * FROM user WHERE email = ?1 AND account_id IS NOT NULL", nativeQuery = true)
-    User getAccountIdFromEmail(String email);
-
     Optional<User> findByEmailAndAccountIsNotNull(String email);
 }

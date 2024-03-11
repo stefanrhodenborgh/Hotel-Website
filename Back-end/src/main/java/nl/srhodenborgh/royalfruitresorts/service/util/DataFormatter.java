@@ -15,7 +15,7 @@ public class DataFormatter {
 
     // Lijst met String fields die niet door de formatStringField gaan
     // zipCode en email hebben een eigen methode voor formatting
-    private final List<String> skipFormatList = Arrays.asList("description", "specialRequest", "uuid", "token", "comment", "imagePath");
+    private final List<String> skipFormatList = Arrays.asList("description", "specialRequest", "uuid", "password", "token", "comment", "imagePath");
     private static final Logger logger = LoggerFactory.getLogger(DataFormatter.class);
 
 

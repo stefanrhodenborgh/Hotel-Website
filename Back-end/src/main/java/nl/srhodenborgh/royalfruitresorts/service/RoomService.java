@@ -73,27 +73,27 @@ public class RoomService {
     }
 
     public Optional<Room> getRoom(long id) {
-        Optional<Room> room = roomRepository.findById(id);
+        Optional<Room> roomOptional = roomRepository.findById(id);
 
-        if (room.isEmpty()) {
+        if (roomOptional.isEmpty()) {
             logger.error("Failed to get room. Cannot find room (id: {})", id);
         }
 
-        return room;
+        return roomOptional;
     }
 
 
     // Update
     public boolean updateRoom(Room updatedRoom, long hotelId) {
-        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
-        Optional<Room> room = roomRepository.findById(updatedRoom.getId());
+        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
+        Optional<Room> roomOptional = roomRepository.findById(updatedRoom.getId());
 
-        if (hotel.isEmpty()) {
+        if (hotelOptional.isEmpty()) {
             logger.error("Failed to update room. Cannot find hotel (id: {})", hotelId);
             return false;
         }
 
-        if (room.isEmpty()) {
+        if (roomOptional.isEmpty()) {
             logger.error("Failed to update room. Cannot find room (id: {})", updatedRoom.getId());
             return false;
         }
@@ -104,14 +104,15 @@ public class RoomService {
         }
 
         dataFormatter.formatFields(updatedRoom);
+        Room room = roomOptional.get();
 
-        room.get().setRoomType(updatedRoom.getRoomType());
-        room.get().setNumBeds(updatedRoom.getNumBeds());
-        room.get().setDescription(updatedRoom.getDescription());
-        room.get().setPrice(updatedRoom.getPrice());
-        room.get().setHotel(hotel.get());
+        room.setRoomType(updatedRoom.getRoomType());
+        room.setNumBeds(updatedRoom.getNumBeds());
+        room.setDescription(updatedRoom.getDescription());
+        room.setPrice(updatedRoom.getPrice());
+        room.setHotel(hotelOptional.get());
 
-        roomRepository.save(room.get());
+        roomRepository.save(room);
         logger.info("Successfully updated room (id: {})", updatedRoom.getId());
         return true;
     }
@@ -163,9 +164,9 @@ public class RoomService {
 
     // Delete
     public boolean deleteRoom (long id){
-        Optional<Room> room = roomRepository.findById(id);
+        Optional<Room> roomOptional = roomRepository.findById(id);
 
-        if (room.isEmpty()) {
+        if (roomOptional.isEmpty()) {
             logger.error("Failed to delete room. Cannot find room (id: {})", id);
             return false;
         }
