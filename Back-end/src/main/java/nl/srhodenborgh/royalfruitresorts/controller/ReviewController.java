@@ -69,11 +69,13 @@ public class ReviewController {
         return ReviewService.Status.SUCCESS;
     }
 
+
     // Read
     @GetMapping("/all-reviews")
     public Iterable<Review> getAllReviews() {
         return reviewService.getAllReviews();
     }
+
 
     @GetMapping("/review/{id}")
     public Optional<Review> getReview(@PathVariable("id") long id) {
@@ -81,11 +83,13 @@ public class ReviewController {
     }
 
 
+
     // Edit
-    @PutMapping("/edit-review/{id}")
-    public ReviewService.Status editReview(@PathVariable ("id") long id, @RequestBody Review updatedReview) {
-        return reviewService.editReview(id, updatedReview);
+    @PutMapping("/update-review/{id}")
+    public ReviewService.Status updateReview(@PathVariable ("id") long id, @RequestBody Review updatedReview) {
+        return reviewService.updateReview(id, updatedReview);
     }
+
 
 
     // Delete

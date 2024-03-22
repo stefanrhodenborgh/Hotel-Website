@@ -16,15 +16,12 @@ public class BookingController {
 
 
     // Create
-//    @PostMapping("/create-booking/{reservationId}")
-//    public boolean createBooking(@PathVariable ("reservationId") long reservationId, @RequestBody Booking booking) {
-//        return bookingService.createBooking(reservationId, booking);
-//    }
-
     @PostMapping("/create-booking")
     public boolean createBooking(@RequestParam String uuid) {
         return bookingService.createBooking(uuid);
     }
+
+
 
     // Read
     @GetMapping("/all-bookings")
@@ -38,20 +35,15 @@ public class BookingController {
     }
 
 
-    // Edit
-    @PutMapping("/edit-booking/{id}")
-    public boolean editBooking(@PathVariable ("id") long id, @RequestBody Booking updatedBooking) {
-        return bookingService.editBooking(id, updatedBooking);
+
+    // Update
+    @PutMapping("/update-booking/{id}")
+    public boolean updateBooking(@PathVariable ("id") long id, @RequestBody Booking updatedBooking) {
+        return bookingService.updateBooking(id, updatedBooking);
     }
+
 
 
     // Delete
     // Om een booking te verwijderen: gebruik cancel-reservation endpoint
-//    @DeleteMapping("/delete-booking/{bookingId}/{reservationId}")
-//    public boolean deleteBooking(@PathVariable ("bookingId") long bookingId, @PathVariable ("reservationId") long reservationId) {
-//        return bookingService.deleteBooking(bookingId, reservationId);
-//    }
-
-
-
 }

@@ -63,12 +63,6 @@ public class InputValidator {
     }
 
 
-    public boolean areRequiredFieldsInvalid(Booking booking) {
-        // Date wordt automatisch toegewezen bij het creëren van een booking
-        return booking.getPaymentMethod() == null;
-    }
-
-
     public boolean areRequiredFieldsInvalid(User user) {
         // Nullable: phoneNumber
 

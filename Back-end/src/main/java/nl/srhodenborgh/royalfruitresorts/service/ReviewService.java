@@ -76,8 +76,8 @@ public class ReviewService {
     }
 
 
-    // Edit
-    public Status editReview(long id, Review updatedReview) {
+    // Update
+    public Status updateReview(long id, Review updatedReview) {
         try {
             Review review = reviewRepository.findById(id).orElseThrow();
             review.setComment(updatedReview.getComment());
