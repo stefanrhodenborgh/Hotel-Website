@@ -1,40 +1,24 @@
 package nl.srhodenborgh.royalfruitresorts.dto;
 
-import nl.srhodenborgh.royalfruitresorts.model.Reservation;
+import java.time.LocalDate;
 
 public class ReservationDTO {
-    private Long hotelId;
+    private long hotelId;
     private String hotelName;
-    private Long roomId;
-    private Reservation reservation;
-    private Long userId;
+    private long roomId;
+    private long reservationId;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
+    private int adults;
+    private int children;
+    private String specialRequest;
+    private long userId;
     private String firstName;
     private String lastName;
 
 
-    public ReservationDTO(Long hotelId, String hotelName, Long roomId, Reservation reservation, Long userId, String firstName, String lastName) {
-        this.hotelId = hotelId;
-        this.hotelName = hotelName;
-        this.roomId = roomId;
-        this.reservation = reservation;
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
 
-    public ReservationDTO(Reservation reservation) {
-        this.hotelId = (reservation.getRoom() != null) ? reservation.getRoom().getHotel().getId() : null;
-        this.hotelName = (reservation.getRoom() != null) ? reservation.getRoom().getHotel().getName() : null;
-        this.roomId = (reservation.getRoom() != null) ? reservation.getRoom().getId() :null;
-        this.reservation = reservation;
-        this.userId = (reservation.getUser() != null) ? reservation.getUser().getId() : null;
-        this.firstName = (reservation.getUser() != null) ? reservation.getUser().getFirstName() : null;
-        this.lastName = (reservation.getUser() != null) ? reservation.getUser().getLastName() : null;
-    }
-
-
-
-    public Long getHotelId() {
+    public long getHotelId() {
         return hotelId;
     }
 
@@ -50,7 +34,7 @@ public class ReservationDTO {
         this.hotelName = hotelName;
     }
 
-    public Long getRoomId() {
+    public long getRoomId() {
         return roomId;
     }
 
@@ -58,15 +42,55 @@ public class ReservationDTO {
         this.roomId = roomId;
     }
 
-    public Reservation getReservation() {
-        return reservation;
+    public long getReservationId() {
+        return reservationId;
     }
 
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
+    public void setReservationId(long reservationId) {
+        this.reservationId = reservationId;
     }
 
-    public Long getUserId() {
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public int getAdults() {
+        return adults;
+    }
+
+    public void setAdults(int adults) {
+        this.adults = adults;
+    }
+
+    public int getChildren() {
+        return children;
+    }
+
+    public void setChildren(int children) {
+        this.children = children;
+    }
+
+    public String getSpecialRequest() {
+        return specialRequest;
+    }
+
+    public void setSpecialRequest(String specialRequest) {
+        this.specialRequest = specialRequest;
+    }
+
+    public long getUserId() {
         return userId;
     }
 

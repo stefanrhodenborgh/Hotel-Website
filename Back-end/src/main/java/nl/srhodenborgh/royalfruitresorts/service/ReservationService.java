@@ -2,11 +2,16 @@ package nl.srhodenborgh.royalfruitresorts.service;
 
 import nl.srhodenborgh.royalfruitresorts.dto.ReservationDTO;
 import nl.srhodenborgh.royalfruitresorts.enums.ReservationStatus;
+import nl.srhodenborgh.royalfruitresorts.mapper.ReservationMapper;
 import nl.srhodenborgh.royalfruitresorts.model.Account;
 import nl.srhodenborgh.royalfruitresorts.model.Reservation;
 import nl.srhodenborgh.royalfruitresorts.model.Room;
 import nl.srhodenborgh.royalfruitresorts.model.User;
 import nl.srhodenborgh.royalfruitresorts.repository.*;
+import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
+import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,215 +30,227 @@ public class ReservationService {
     private BookingRepository bookingRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private DataFormatter dataFormatter;
+    @Autowired
+    private InputValidator inputValidator;
+    @Autowired
+    private ReservationMapper reservationMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 
 
     // Create
     public String createReservation (ReservationDTO reservationDTO) {
 
-        Optional<Room> room = roomRepository.findById(reservationDTO.getRoomId());
-        Optional<User> user = userRepository.findById(reservationDTO.getUserId());
-        Reservation reservation = reservationDTO.getReservation();
-
-        if (room.isEmpty() || user.isEmpty()) {
+        if (inputValidator.areRequiredFieldsInvalid(reservationDTO)) {
+            logger.error("Failed to create reservation. Input fields are invalid");
             return null;
         }
 
-        String uuid = UUID.randomUUID().toString();
+        Optional<Room> roomOptional = roomRepository.findById(reservationDTO.getRoomId());
+        Optional<User> userOptional = userRepository.findById(reservationDTO.getUserId());
 
-        reservation.setRoom(room.get());
-        reservation.setUser(user.get());
-        //zet surcharge op true indien er kinderen komen
-        reservation.setSurcharge(reservationDTO.getReservation().getChildren() != 0);
+        if (roomOptional.isEmpty()) {
+            logger.error("Failed to create reservation. Room (id: {}) doesn't exist", reservationDTO.getRoomId());
+            return null;
+        }
+
+        if (userOptional.isEmpty()) {
+            logger.error("Failed to create reservation. User (id: {}) doesn't exist", reservationDTO.getUserId());
+            return null;
+        }
+
+        Reservation reservation = reservationMapper.mapToReservation(reservationDTO);
+
+        dataFormatter.formatFields(reservation);
+
+        reservation.setRoom(roomOptional.get());
+        reservation.setUser(userOptional.get());
+
+        String uuid = UUID.randomUUID().toString();
         reservation.setUuid(uuid);
 
         reservationRepository.save(reservation);
-        System.out.println("Successfully created reservation on Id: " + reservation.getId());
+        logger.info("Successfully created reservation on Id: {}", reservation.getId());
         return uuid;
     }
 
 
 
-
-
-
     // Read
     public Iterable<ReservationDTO> getAllReservations(String sort) {
-        // Stuurt een ReservationDTO lijst terug
+
         Iterable<Reservation> reservations = reservationRepository.findAll();
         List<ReservationDTO> DTOList = new ArrayList<>();
 
+        if (!reservations.iterator().hasNext()) {
+            logger.error("No reservations found in database");
+        }
+
         for (Reservation reservation : reservations) {
-            DTOList.add(new ReservationDTO(reservation));
+            DTOList.add(reservationMapper.mapToReservationDTO(reservation));
         }
         return sortList(DTOList, sort);
     }
 
-    public List<ReservationDTO> sortList(List<ReservationDTO> list, String sort) {
-        // Als er geen sort-waarde is meegegeven, wordt er gesorteerd op roomId (default)
-        // TODO: dit door JPA Query in repository laten doen
-        if (sort == null) { sort = ""; }
-        switch (sort) {
-            case "hotelId":
-                list.sort(Comparator.comparingLong(dto -> {
-                    Long hotelId = dto.getHotelId();
-                    return hotelId != null ? hotelId : Long.MIN_VALUE;
-                }));
-                break;
-            case "hotelName":
-                list.sort(Comparator.comparing(dto -> {
-                    String hotelName = dto.getHotelName();
-                    return hotelName != null ? hotelName : "";
-                }));
-                break;
-            case "reservationId":
-                list.sort(Comparator.comparingLong(dto -> dto.getReservation().getId()));
-                break;
-            case "checkInDate":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getCheckInDate()));
-                break;
-            case "checkOutDate":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getCheckOutDate()));
-                break;
-            case "adults":
-                list.sort(Comparator.comparingInt(dto -> dto.getReservation().getAdults()));
-                break;
-            case "children":
-                list.sort(Comparator.comparingInt(dto -> dto.getReservation().getChildren()));
-                break;
-            case "surcharge":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().isSurcharge()));
-                break;
-            case "reservationStatus":
-                list.sort(Comparator.comparing(dto -> dto.getReservation().getReservationStatus()));
-                break;
-            case "userId":
-                list.sort(Comparator.comparingLong(dto -> {
-                    Long userId = dto.getUserId();
-                    return userId != null ? userId : Long.MIN_VALUE;
-                }));
-                break;
-            case "firstName":
-                list.sort(Comparator.comparing(dto -> {
-                    String firstName = dto.getFirstName();
-                    return firstName != null ? firstName : ""; // You can use an empty string or any other default value
-                }));
-                break;
-            case "lastName":
-                list.sort(Comparator.comparing(dto -> {
-                    String lastName = dto.getLastName();
-                    return lastName != null ? lastName : "";
-                }));
-                break;
-            default:
-                list.sort(Comparator.comparingLong(dto -> {
-                    Long roomId = dto.getRoomId();
-                    return roomId != null ? roomId : Long.MIN_VALUE;
-                }));
-        } return list;
-    }
 
     public ReservationDTO getReservation(long id) {
-        if (reservationRepository.existsById(id)) {
-            Reservation reservation = reservationRepository.findById(id).orElseThrow();
-            return new ReservationDTO(reservation);
-        } else return null;
-    }
+        Optional<Reservation> reservationOptional = reservationRepository.findById(id);
 
-    public String isReservationPaid(String uuid) {
-
-        Optional<Reservation> reservation = reservationRepository.findByUuid(uuid);
-
-        // Stuurt een datum uit indien de reservering al betaald is
-        if (reservation.isEmpty()) {
-            return "NOT_FOUND";
-        } else if (reservation.get().getBooking() == null) {
-            return "NOT_PAID";
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            return reservation.get().getBooking().getDate().format(formatter);
+        if (reservationOptional.isEmpty()) {
+            logger.error("Failed to get reservation. Cannot find reservation (id: {})", id);
+            return null;
         }
+
+        return reservationMapper.mapToReservationDTO(reservationOptional.get());
     }
 
 
 
-     // Edit
-    public boolean editReservation(long id, ReservationDTO updatedReservation) {
-        try {
-            Reservation reservation = reservationRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("Cannot find reservation on Id: " + id));
-            Room room = roomRepository.findById(updatedReservation.getRoomId())
-                    .orElseThrow(() -> new NoSuchElementException("Cannot find room on Id: " + updatedReservation.getRoomId()));
-            reservation.setRoom(room);
+    // Update
+    public boolean updateReservation(long id, ReservationDTO updatedReservation) {
+        Optional<Reservation> reservationOptional = reservationRepository.findById(id);
 
-            if (updatedReservation.getReservation().getCheckInDate() != null) {
-                reservation.setCheckInDate(updatedReservation.getReservation().getCheckInDate());
-            }
-            if (updatedReservation.getReservation().getCheckOutDate() != null) {
-                reservation.setCheckOutDate(updatedReservation.getReservation().getCheckOutDate());
-            }
-            if (updatedReservation.getReservation().getAdults() != 0) {
-                reservation.setAdults(updatedReservation.getReservation().getAdults());
-            }
-            reservation.setChildren(updatedReservation.getReservation().getChildren());
-            reservation.setSurcharge(updatedReservation.getReservation().getChildren() != 0);
-            if (updatedReservation.getReservation().getSpecialRequest() != null) {
-                reservation.setSpecialRequest(updatedReservation.getReservation().getSpecialRequest());
-            }
-            reservation.setStatus(ReservationStatus.RESERVED);
-
-            reservationRepository.save(reservation);
-            System.out.println("Reservation successfully edited");
-            return true;
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to edit reservation. " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Error while editing reservation");
-            System.err.println(e.getMessage());
+        if (reservationOptional.isEmpty()) {
+            logger.error("Failed to update reservation. Cannot find reservation (id: {})", id);
+            return false;
         }
-        return false;
+
+        if (inputValidator.areRequiredFieldsInvalid(updatedReservation)) {
+            logger.error("Failed to update reservation (id: {}). Input fields are invalid", id);
+            return false;
+        }
+
+        Optional<Room> roomOptional = roomRepository.findById(updatedReservation.getRoomId());
+
+        if (roomOptional.isEmpty()) {
+            logger.error("Failed to update reservation. Cannot find room (id: {})", updatedReservation.getRoomId());
+            return false;
+        }
+
+        Reservation reservation = reservationOptional.get();
+        dataFormatter.formatFields(reservation);
+        reservation.setRoom(roomOptional.get());
+
+        reservation.setCheckInDate(updatedReservation.getCheckInDate());
+        reservation.setCheckOutDate(updatedReservation.getCheckOutDate());
+        reservation.setAdults(updatedReservation.getAdults());
+        reservation.setChildren(updatedReservation.getChildren());
+        reservation.setSurcharge(updatedReservation.getChildren() != 0);
+        reservation.setSpecialRequest(updatedReservation.getSpecialRequest());
+        reservation.setStatus(ReservationStatus.RESERVED);
+        //TODO: moet status op reserved staan? Moet de booking dan verwijderd worden?
+
+        reservationRepository.save(reservation);
+        logger.info("Successfully updated reservation (id: {})", id);
+        return true;
     }
 
 
     // Delete
     public boolean cancelReservation(long id) {
         // Met deze methode wordt de booking verwijderd en de reservering op status CANCELLED gezet
+        Optional<Reservation> reservationOptional = reservationRepository.findById(id);
 
-        try {
-            Reservation reservation = reservationRepository.findById(id).orElseThrow();
-
-            // Als er een booking en een account is, worden er loyalty punten van het account gehaald
-            Optional<Account> account = accountRepository.findById(reservation.getUser().getAccount().getId());
-            if (account.isPresent() && reservation.getBooking() != null) {
-                account.get().setLoyaltyPoints((account.get().getLoyaltyPoints() - 100));
-                System.out.println("Loyalty points removed on account: " + account.get().getId());
-                accountRepository.save(account.get());
-            }
-
-
-            // Als er een Booking is gekoppeld aan de reservering, wordt de booking verwijderd
-            if (reservation.getBooking() != null) {
-                long bookingId = reservation.getBooking().getId();
-                reservation.setBooking(null);
-                bookingRepository.deleteById(bookingId);
-                System.out.println("Successfully deleted booking with Id: " + bookingId +
-                        ", associated with reservation with Id: " + id);
-            }
-
-
-            // Reserveringen worden niet verwijderd, maar op reservationStatus CANCELLED gezet
-            reservation.setStatus(ReservationStatus.CANCELLED);
-            reservationRepository.save(reservation);
-            System.out.println("Reservation set to status CANCELLED for Id: " + id);
-            return true;
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to delete reservation. Reservation with Id: " + id + " doesn't exist");
-        } catch (Exception e) {
-            System.err.println("Failed to cancel reservation with Id: " + id);
-            System.err.println(e.getMessage());
+        if (reservationOptional.isEmpty()) {
+            logger.error("Failed to cancel reservation. Cannot find reservation (id: {})", id);
+            return false;
         }
-        return false;
+
+        Reservation reservation = reservationOptional.get();
+
+        // Als er een account en een booking is gekoppeld aan de reservering, worden er loyalty punten van het account in mindering gebracht
+        if (reservation.getUser().getAccount() != null && reservation.getBooking() != null) {
+            subtractLoyaltyPoints(reservation);
+        }
+
+        // Als er een booking gekoppeld is aan de reservering, wordt de booking verwijderd
+        if (reservation.getBooking() != null) {
+            long bookingId = reservation.getBooking().getId();
+            reservation.setBooking(null);
+            bookingRepository.deleteById(bookingId);
+            logger.info("Successfully deleted booking (id: {}) associated with reservation (id: {})", bookingId, id);
+        }
+
+        // Reserveringen worden niet verwijderd, maar op reservationStatus CANCELLED gezet
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservationRepository.save(reservation);
+        logger.info("Reservation set to status CANCELLED for Id: {}", id);
+        return true;
     }
 
 
+
+    // Andere methodes
+    private List<ReservationDTO> sortList(List<ReservationDTO> list, String sort) {
+        // Als er geen sort-waarde is meegegeven, wordt er gesorteerd op roomId (default)
+        // TODO: Surcharge en reservationStatus in filter methode maken en de overige parameters ook in filtersysteem zetten
+        if (sort == null) { sort = ""; }
+
+        switch (sort) {
+            case "hotelId":
+                list.sort(Comparator.comparingLong(ReservationDTO::getHotelId));
+                break;
+            case "hotelName":
+                list.sort(Comparator.comparing(ReservationDTO::getHotelName));
+                break;
+            case "reservationId":
+                list.sort(Comparator.comparingLong(ReservationDTO::getReservationId));
+                break;
+            case "checkInDate":
+                list.sort(Comparator.comparing(ReservationDTO::getCheckInDate));
+                break;
+            case "checkOutDate":
+                list.sort(Comparator.comparing(ReservationDTO::getCheckOutDate));
+                break;
+            case "adults":
+                list.sort(Comparator.comparingInt(ReservationDTO::getAdults));
+                break;
+            case "children":
+                list.sort(Comparator.comparingInt(ReservationDTO::getChildren));
+                break;
+            case "userId":
+                list.sort(Comparator.comparingLong(ReservationDTO::getUserId));
+                break;
+            case "firstName":
+                list.sort(Comparator.comparing(ReservationDTO::getFirstName));
+                break;
+            case "lastName":
+                list.sort(Comparator.comparing(ReservationDTO::getLastName));
+                break;
+            default:
+                list.sort(Comparator.comparingLong(ReservationDTO::getRoomId));
+        } return list;
+    }
+
+
+    public String getReservationStatus(String uuid) {
+
+        Optional<Reservation> reservationOptional = reservationRepository.findByUuid(uuid);
+
+        // TODO: In front end cancelled status fixen
+        // Stuurt een datum (String) uit indien de reservering al betaald is
+        if (reservationOptional.isEmpty()) {
+            return "NOT_FOUND";
+        } else if (reservationOptional.get().getReservationStatus() == ReservationStatus.CANCELLED) {
+            return "CANCELLED";
+        } else if (reservationOptional.get().getBooking() == null) {
+            return "NOT_PAID";
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return reservationOptional.get().getBooking().getDate().format(formatter);
+        }
+    }
+
+
+    private void subtractLoyaltyPoints(Reservation reservation) {
+        // TODO: Settings loyalty points amount
+        Optional<Account> accountOptional = accountRepository.findById(reservation.getUser().getAccount().getId());
+        Account account = accountOptional.get();
+
+        account.setLoyaltyPoints(account.getLoyaltyPoints() - 100);
+        logger.info("Loyalty points removed from account: {}", account.getId());
+        accountRepository.save(account);
+    }
 }

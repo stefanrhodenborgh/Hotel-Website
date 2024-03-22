@@ -2,6 +2,7 @@ package nl.srhodenborgh.royalfruitresorts.service;
 
 import java.util.*;
 
+import nl.srhodenborgh.royalfruitresorts.mapper.ReservationMapper;
 import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReviewRepository;
@@ -35,6 +36,8 @@ public class HotelService {
     private InputValidator inputValidator;
     @Autowired
     private DataFormatter dataFormatter;
+    @Autowired
+    private ReservationMapper reservationMapper;
     private static final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
 
@@ -93,21 +96,26 @@ public class HotelService {
 
     // TODO: reservationDTO 1-dimensionaal maken en deze methode fixen. JPA Query maken!
     public Iterable<ReservationDTO> getReservationsOfHotel(long id){
-        try {
-            Iterable<Reservation> reservations = reservationRepository.findReservationsOfHotel(id);
 
-            List<ReservationDTO> dtoList = new ArrayList<>();
-
-            for (Reservation r : reservations) {
-                dtoList.add(new ReservationDTO(id, r.getRoom().getHotel().getName(), r.getId(),
-                        r, r.getUser().getId(), r.getUser().getFirstName(), r.getUser().getLastName()));
-            }
-            System.out.println("Returning list of reservations of hotel with Id: " + id);
-            return dtoList;
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to get hotel. Cannot find hotel on Id: " + id);
+        if (!hotelRepository.existsById(id)) {
+            logger.error("Failed to get reservations. Cannot find hotel (id: {})", id);
+            return null;
         }
-        return null;
+
+        Iterable<Reservation> reservations = reservationRepository.findReservationsOfHotel(id);
+
+        if (!reservations.iterator().hasNext()) {
+            logger.warn("No reservations found of hotel (id: {})", id);
+            return null;
+        }
+
+        List<ReservationDTO> dtoList = new ArrayList<>();
+
+        for (Reservation reservation : reservations) {
+            dtoList.add(reservationMapper.mapToReservationDTO(reservation));
+        }
+
+        return dtoList;
     }
 
 

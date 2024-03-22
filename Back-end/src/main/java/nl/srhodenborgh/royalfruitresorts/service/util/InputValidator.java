@@ -1,5 +1,6 @@
 package nl.srhodenborgh.royalfruitresorts.service.util;
 
+import nl.srhodenborgh.royalfruitresorts.dto.ReservationDTO;
 import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
 import nl.srhodenborgh.royalfruitresorts.model.*;
 import org.slf4j.Logger;
@@ -49,15 +50,16 @@ public class InputValidator {
     }
 
 
-    public boolean areRequiredFieldsInvalid(Reservation reservation) {
+    public boolean areRequiredFieldsInvalid(ReservationDTO reservationDTO) {
         // Nullable: Special Request, uuid
         // Surcharge is op default false
 
-        return reservation.getCheckInDate() == null ||
-                reservation.getCheckOutDate() == null ||
-                reservation.getAdults() <= 0 ||
-                reservation.getChildren() < 0 ||
-                reservation.getReservationStatus() == null;
+        return reservationDTO.getCheckInDate() == null ||
+                reservationDTO.getCheckOutDate() == null ||
+                reservationDTO.getCheckInDate().isAfter(reservationDTO.getCheckOutDate()) ||
+                reservationDTO.getCheckInDate().isEqual(reservationDTO.getCheckOutDate()) ||
+                reservationDTO.getAdults() <= 0 ||
+                reservationDTO.getChildren() < 0;
     }
 
 
@@ -108,7 +110,9 @@ public class InputValidator {
 
 
     public boolean areRequiredFieldsInvalid(RoomSearchDTO query) {
-        return query.getCheckInDate().isAfter(query.getCheckOutDate()) ||
+        return query.getCheckInDate() == null ||
+                query.getCheckOutDate() == null ||
+                query.getCheckInDate().isAfter(query.getCheckOutDate()) ||
                 query.getCheckInDate().isEqual(query.getCheckOutDate()) ||
                 query.getAdults() < 1 ||
                 query.getChildren() < 0;

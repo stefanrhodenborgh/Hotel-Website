@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.srhodenborgh.royalfruitresorts.enums.ReservationStatus;
+import nl.srhodenborgh.royalfruitresorts.mapper.ReservationMapper;
 import nl.srhodenborgh.royalfruitresorts.repository.BookingRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.UserRepository;
@@ -33,6 +34,8 @@ public class UserService {
     private InputValidator inputValidator;
     @Autowired
     private DataFormatter dataFormatter;
+    @Autowired
+    private ReservationMapper reservationMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
@@ -75,27 +78,32 @@ public class UserService {
     }
 
     public Iterable<ReservationDTO> findReservationsOfUser(long id, String pastOrPresent) {
-        // TODO: deze cleanen/fixen. Afhankelijk van reservationDTO. Check ook sort in JPA Query
-        pastOrPresent = pastOrPresent.toLowerCase().trim();
+
+        if (!userRepository.existsById(id)) {
+            logger.error("Failed to get reservations. Cannot find user (id: {})", id);
+            return null;
+        }
 
         List<ReservationDTO> dtoList = new ArrayList<>();
+        Iterable<Reservation> reservations;
 
-        if (userRepository.existsById(id)) {
-            Iterable<Reservation> reservations;
-            if (pastOrPresent.equals("past")) {
-                reservations = reservationRepository.findPastReservationsOfUser(id);
-            } else {
-                reservations = reservationRepository.findPresentReservationsOfUser(id);
-            }
-
-            for (Reservation reservation : reservations) {
-                dtoList.add(new ReservationDTO(reservation));
-            }
-            dtoList.sort(Comparator.comparing(dto -> dto.getReservation().getCheckInDate()));
-//            System.out.println("Returning list of reservations from user with Id: " + id);
+        if (pastOrPresent.equals("past")) {
+            reservations = reservationRepository.findPastReservationsOfUser(id);
         } else {
-            System.err.println("Failed to get reservations. Cannot find user on Id: " + id);
+            reservations = reservationRepository.findPresentReservationsOfUser(id);
         }
+
+        if (!reservations.iterator().hasNext()) {
+            logger.warn("No reservations found of user (id: {})", id);
+            return null;
+        }
+
+        for (Reservation reservation : reservations) {
+            dtoList.add(reservationMapper.mapToReservationDTO(reservation));
+        }
+
+        dtoList.sort(Comparator.comparing(ReservationDTO::getCheckInDate));
+
         return dtoList;
     }
 

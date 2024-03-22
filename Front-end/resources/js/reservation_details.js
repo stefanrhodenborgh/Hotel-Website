@@ -277,7 +277,7 @@ function createReservation(userId) {
         "userId": userId
     }
 
-    return fetch(url + "/createreservation", {
+    return fetch(url + "/create-reservation", {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",

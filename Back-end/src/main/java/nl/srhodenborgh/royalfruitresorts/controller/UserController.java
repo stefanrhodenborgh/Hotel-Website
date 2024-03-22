@@ -46,6 +46,7 @@ public class UserController {
     @GetMapping("/{id}/reservations")
     public Iterable<ReservationDTO> findReservationsOfUser(@PathVariable ("id") long id, @RequestParam(required = false) String pastOrPresent) {
         // Voer als parameter "past" in of "present"(=default)
+        pastOrPresent = pastOrPresent.toLowerCase().trim();
         return userService.findReservationsOfUser(id, pastOrPresent);
     }
 

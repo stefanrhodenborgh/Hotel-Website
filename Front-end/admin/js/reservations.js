@@ -67,7 +67,7 @@ async function displayRooms() {
 async function getAllReservations(){
     let sort = document.getElementById("sort").value;
 
-    await fetch(url+"/allreservations?sort=" + sort)
+    await fetch(url+"/all-reservations?sort=" + sort)
     .then(res => res.json())
     .then (reservations => {
         let reservationshtml = `
@@ -137,7 +137,7 @@ async function createReservation() {
     } else if (resDTO.reservation.children == null) {
         alert("Please fill in the number of children")
     } else {
-        const res = await fetch(url+"/createreservation", {
+        const res = await fetch(url+"/create-reservation", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -189,7 +189,7 @@ async function deleteReservation(reservationId) {
 }
 
 async function editReservation(reservationId, hotelId) {
-    await fetch(url+"/editreservation/" + reservationId)
+    await fetch(url+"/update-reservation/" + reservationId)
     .then(res => res.json())
     .then(reservation => {
         let form = `

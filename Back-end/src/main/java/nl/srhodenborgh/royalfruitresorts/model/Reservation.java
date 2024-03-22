@@ -31,7 +31,7 @@ public class Reservation {
     private Room room;
     @ManyToOne
     private User user;
-    @OneToOne(optional = true, mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation")
     private Booking booking;
 
 

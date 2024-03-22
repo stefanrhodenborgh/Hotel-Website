@@ -23,14 +23,14 @@ public class ReservationController {
 
 
     // Create
-    @PostMapping("/createreservation")
+    @PostMapping("/create-reservation")
     public String createReservation(@RequestBody ReservationDTO reservationDTO) {
         return reservationService.createReservation(reservationDTO);
     }
 
 
     // Read
-    @GetMapping("/allreservations")
+    @GetMapping("/all-reservations")
     public Iterable<ReservationDTO> getAllReservations(@RequestParam(required = false) String sort){
         return reservationService.getAllReservations(sort);
     }
@@ -41,16 +41,16 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation-status")
-    public String isReservationPaid(@RequestParam String uuid) {
-        return reservationService.isReservationPaid(uuid);
+    public String getReservationStatus(@RequestParam String uuid) {
+        return reservationService.getReservationStatus(uuid);
     }
 
 
 
-    // Edit
-    @PutMapping("/editreservation/{id}")
-    public boolean editReservation(@PathVariable ("id") long id, @RequestBody ReservationDTO updatedReservation) {
-        return reservationService.editReservation(id, updatedReservation);
+    // Update
+    @PutMapping("/update-reservation/{id}")
+    public boolean updateReservation(@PathVariable ("id") long id, @RequestBody ReservationDTO updatedReservation) {
+        return reservationService.updateReservation(id, updatedReservation);
     }
 
 
@@ -59,8 +59,4 @@ public class ReservationController {
     public boolean cancelReservation(@PathVariable ("id") long id) {
         return reservationService.cancelReservation(id);
     }
-
-
-
-
 }
