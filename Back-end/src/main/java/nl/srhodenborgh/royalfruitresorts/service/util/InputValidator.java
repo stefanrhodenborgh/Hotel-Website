@@ -3,8 +3,6 @@ package nl.srhodenborgh.royalfruitresorts.service.util;
 import nl.srhodenborgh.royalfruitresorts.dto.ReservationDTO;
 import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
 import nl.srhodenborgh.royalfruitresorts.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -82,14 +80,10 @@ public class InputValidator {
 
     public boolean areRequiredFieldsInvalid(Account account) {
         // Nullable: token
-        // TODO: loyaltypoints en role weghalen. HotelID ook?
-        return isFieldInvalid(account.getPassword(), PASSWORD_REGEX)  ||
-                account.getLoyaltyPoints() < 0 ||
-                account.getRole() == null ||
-
-                (account.getHotelId() != Account.USER_HOTEL_ID ||
-                account.getHotelId() != Account.OWNER_HOTEL_ID ||
-                account.getHotelId() < Account.USER_HOTEL_ID);
+        // TODO: DISABLED: Password validator is uitgeschakeld!!
+//        return areRequiredFieldsInvalid(account.getUser()) ||
+//                isFieldInvalid(account.getPassword(), PASSWORD_REGEX);
+        return areRequiredFieldsInvalid(account.getUser());
     }
 
 

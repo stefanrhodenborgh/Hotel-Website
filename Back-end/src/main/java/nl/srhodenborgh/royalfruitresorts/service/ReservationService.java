@@ -3,10 +3,7 @@ package nl.srhodenborgh.royalfruitresorts.service;
 import nl.srhodenborgh.royalfruitresorts.dto.ReservationDTO;
 import nl.srhodenborgh.royalfruitresorts.enums.ReservationStatus;
 import nl.srhodenborgh.royalfruitresorts.mapper.ReservationMapper;
-import nl.srhodenborgh.royalfruitresorts.model.Account;
-import nl.srhodenborgh.royalfruitresorts.model.Reservation;
-import nl.srhodenborgh.royalfruitresorts.model.Room;
-import nl.srhodenborgh.royalfruitresorts.model.User;
+import nl.srhodenborgh.royalfruitresorts.model.*;
 import nl.srhodenborgh.royalfruitresorts.repository.*;
 import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
 import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
@@ -30,6 +27,8 @@ public class ReservationService {
     private BookingRepository bookingRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private SettingsService settingsService;
     @Autowired
     private DataFormatter dataFormatter;
     @Autowired
@@ -245,11 +244,10 @@ public class ReservationService {
 
 
     private void subtractLoyaltyPoints(Reservation reservation) {
-        // TODO: Settings loyalty points amount
         Optional<Account> accountOptional = accountRepository.findById(reservation.getUser().getAccount().getId());
         Account account = accountOptional.get();
 
-        account.setLoyaltyPoints(account.getLoyaltyPoints() - 100);
+        account.setLoyaltyPoints(account.getLoyaltyPoints() - settingsService.getLoyaltyPointsAddition());
         logger.info("Loyalty points removed from account: {}", account.getId());
         accountRepository.save(account);
     }

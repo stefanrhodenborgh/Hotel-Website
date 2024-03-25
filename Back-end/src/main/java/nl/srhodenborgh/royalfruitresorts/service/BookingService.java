@@ -5,9 +5,11 @@ import nl.srhodenborgh.royalfruitresorts.enums.ReservationStatus;
 import nl.srhodenborgh.royalfruitresorts.model.Account;
 import nl.srhodenborgh.royalfruitresorts.model.Booking;
 import nl.srhodenborgh.royalfruitresorts.model.Reservation;
+import nl.srhodenborgh.royalfruitresorts.model.Setting;
 import nl.srhodenborgh.royalfruitresorts.repository.AccountRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.BookingRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReservationRepository;
+import nl.srhodenborgh.royalfruitresorts.repository.SettingsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class BookingService {
     private ReservationRepository reservationRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private SettingsService settingsService;
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
 
@@ -117,8 +121,8 @@ public class BookingService {
 
     // Andere methodes
     private void addLoyaltyPoints(Account account) {
-        // TODO: Loyalty points amount in settings page
-        account.setLoyaltyPoints(account.getLoyaltyPoints() + 100);
+        // addition komt uit de settings table
+        account.setLoyaltyPoints(account.getLoyaltyPoints() + settingsService.getLoyaltyPointsAddition());
         accountRepository.save(account);
     }
 }

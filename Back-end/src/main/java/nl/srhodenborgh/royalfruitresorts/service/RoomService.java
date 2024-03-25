@@ -30,6 +30,8 @@ public class RoomService {
     @Autowired
     private HotelRepository hotelRepository;
     @Autowired
+    private SettingsService settingsService;
+    @Autowired
     private InputValidator inputValidator;
     @Autowired
     private DataFormatter dataFormatter;
@@ -118,9 +120,6 @@ public class RoomService {
     }
 
 
-
-
-
     public boolean setRoomDescriptionByRoomType(long hotelId, String roomType, String description) {
 
         RoomType roomTypeEnum = createRoomTypeEnum(roomType);
@@ -143,6 +142,7 @@ public class RoomService {
         return true;
 
     }
+
 
     private RoomType createRoomTypeEnum(String roomTypeInput) {
 
@@ -281,10 +281,9 @@ public class RoomService {
         long numOfDays = ChronoUnit.DAYS.between(query.getCheckInDate(), query.getCheckOutDate());
         double totalPrice = (numOfDays * price);
 
-        // TODO: Settings (id, key, value, description) page met surcharge en loyalty points hoogte en loyalty start
-        // Als er kinderen zijn, komt er een toeslag van 25 euro bovenop
+        // Als er kinderen zijn, komt er een toeslag bovenop. Die wordt uit de settings SQL tabel gehaald
         if (query.getChildren() > 0) {
-            totalPrice += 25;
+            totalPrice += settingsService.getSurchargeAmount();
         }
         return totalPrice;
     }

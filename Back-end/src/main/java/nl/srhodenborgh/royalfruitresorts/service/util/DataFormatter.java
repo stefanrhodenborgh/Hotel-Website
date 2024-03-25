@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class DataFormatter {
 
-    // TODO: Deze class testen en implementeren. Class is nu uitgeschakeld!
+    // TODO: DISABLED: Deze class testen en implementeren. Class is nu uitgeschakeld!
 
     // Lijst met String fields die niet door de formatStringField gaan
     // zipCode en email hebben een eigen methode voor formatting

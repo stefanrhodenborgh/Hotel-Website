@@ -1,22 +1,23 @@
 package nl.srhodenborgh.royalfruitresorts.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-
-import nl.srhodenborgh.royalfruitresorts.model.*;
+import jakarta.servlet.http.HttpServletRequest;
+import nl.srhodenborgh.royalfruitresorts.enums.Role;
+import nl.srhodenborgh.royalfruitresorts.model.Account;
+import nl.srhodenborgh.royalfruitresorts.model.Review;
+import nl.srhodenborgh.royalfruitresorts.model.User;
 import nl.srhodenborgh.royalfruitresorts.repository.AccountRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReviewRepository;
-import nl.srhodenborgh.royalfruitresorts.repository.SettingsRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.UserRepository;
-import nl.srhodenborgh.royalfruitresorts.enums.Role;
-import jakarta.servlet.http.HttpServletRequest;
 import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
 import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class AccountService {
@@ -27,7 +28,7 @@ public class AccountService {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
-    private SettingsRepository settingsRepository;
+    private SettingsService settingsService;
     @Autowired
     private InputValidator inputValidator;
     @Autowired
@@ -38,9 +39,9 @@ public class AccountService {
 
     // Create
     public Long createAccount(Account account) {
-        // TODO: moet dit long teruggeven?
+        // TODO: moet dit long teruggeven? Als er een account wordt gemaakt moet hij meteen een token maken denk ik
 
-        if (inputValidator.areRequiredFieldsInvalid(account.getUser())) {
+        if (inputValidator.areRequiredFieldsInvalid(account)) {
             logger.error("Failed to create account. Input fields are invalid");
             return null;
         }
@@ -52,10 +53,9 @@ public class AccountService {
 
         dataFormatter.formatFields(account.getUser());
 
-        // TODO: loyalty points start in settings
         account.getUser().setEmail(account.getUser().getEmail().toLowerCase());
-        account.setLoyaltyPoints(0);
         account.setRole(Role.GUEST);
+        account.setLoyaltyPoints(settingsService.getLoyaltyPointsStartAmount());
         account.setHotelId(Account.USER_HOTEL_ID);
         account.setUser(account.getUser());
 
