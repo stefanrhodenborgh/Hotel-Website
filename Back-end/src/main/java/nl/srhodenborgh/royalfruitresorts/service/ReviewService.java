@@ -1,15 +1,20 @@
 package nl.srhodenborgh.royalfruitresorts.service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import nl.srhodenborgh.royalfruitresorts.model.Account;
+import nl.srhodenborgh.royalfruitresorts.model.Hotel;
+import nl.srhodenborgh.royalfruitresorts.model.Review;
 import nl.srhodenborgh.royalfruitresorts.repository.AccountRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.HotelRepository;
 import nl.srhodenborgh.royalfruitresorts.repository.ReviewRepository;
+import nl.srhodenborgh.royalfruitresorts.service.util.DataFormatter;
+import nl.srhodenborgh.royalfruitresorts.service.util.InputValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import nl.srhodenborgh.royalfruitresorts.model.Review;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ReviewService {
@@ -19,99 +24,104 @@ public class ReviewService {
     private HotelRepository hotelRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private InputValidator inputValidator;
+    @Autowired
+    private DataFormatter dataFormatter;
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
 
-    public enum Status { SUCCESS, FAILED, INVALID_INPUT }
 
-    
+
     // Create
-    public void createReview(Review review) {
-    	reviewRepository.save(review);
-    }
-    	
-    	// welk user is er
+    public boolean createReview(long hotelId, Account account, Review review) {
+        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
 
-//        if (review.getRating() > 5) {
-//            System.err.println("Rating cannot be more than 5 stars");
-//            return Status.TOO_MANY_STARS;
-//        } else if (review.getComment().length() > 1000){
-//            System.err.println("Comment cannot contain more than 1000 characters");
-//            return Status.TOO_MANY_CHARACTERS;
-//        }
-//
-//        try {
-//            Hotel hotel = hotelRepository.findById(hotelId)
-//                    .orElseThrow(() -> new NoSuchElementException("Cannot find hotel with Id: " + hotelId));
-//            Account account = accountRepository.findById(sessionDTO.getAccountId())
-//                    .orElseThrow(() -> new NoSuchElementException("Cannot find account with Id: " + sessionDTO.getAccountId()));
-//
-//            review.setDate(LocalDateTime.now());
-//            review.setAccount(account);
-//            review.setHotel(hotel);
-//
-//            reviewRepository.save(review);
-//            System.out.println("Successfully created review on Id: " + review.getId());
-//            return Status.SUCCESS;
-//        } catch (NoSuchElementException e) {
-//            System.err.println("Failed to create review. " + e.getMessage());
-//            return Status.FAILED;
-//        } catch (DataAccessException e) {
-//            System.err.println("Failed to save review to the database: " + e.getMessage());
-//            return Status.FAILED;
-//        }
+        if (hotelOptional.isEmpty()) {
+            logger.error("Failed to create review. Cannot find hotel (id: {})", hotelId);
+            return false;
+        }
+
+        if (inputValidator.areRequiredFieldsInvalid(review) || inputValidator.isNameInvalid(review.getName())) {
+            logger.error("Failed to create review. Input fields are invalid");
+            return false;
+        }
+
+        dataFormatter.formatFields(review);
+        review.setHotel(hotelOptional.get());
+        review.setAccount(account);
+        review.setDate(LocalDateTime.now());
+
+    	reviewRepository.save(review);
+        logger.info("Successfully created review on Id: {}", review.getId());
+        return true;
+    }
+
 
 
     // Read
     public Iterable<Review> getAllReviews() {
-        System.out.println("Returning list of all reviews");
-        return reviewRepository.findAll();
+        Iterable<Review> reviews = reviewRepository.findAll();
+
+        if (!reviews.iterator().hasNext()) {
+            logger.error("No reviews found in database");
+        }
+
+        return reviews;
     }
 
+
     public Optional<Review> getReview(long id) {
-        if (reviewRepository.findById(id).isPresent()) {
-            System.out.println("Returning review on Id: " + id);
-        } else {
-            System.err.println("Failed to get review. Cannot find review on Id: " + id);
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
+
+        if (reviewOptional.isEmpty()) {
+            logger.error("Failed to get review. Cannot find review (id: {})", id);
         }
-        return reviewRepository.findById(id);
+
+        return reviewOptional;
     }
 
 
     // Update
-    public Status updateReview(long id, Review updatedReview) {
-        try {
-            Review review = reviewRepository.findById(id).orElseThrow();
-            review.setComment(updatedReview.getComment());
-            review.setRating(updatedReview.getRating());
-            reviewRepository.save(review);
-            System.out.println("Successfully updated review with Id: " + id);
-            return Status.SUCCESS;
-        } catch (NoSuchElementException e) {
-            System.err.println("Failed to edit password. Cannot find review on Id: " + id);
-            System.err.println(e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Failed to edit review with Id: " + id);
-            System.err.println(e.getMessage());
+    public boolean updateReview(long id, Review updatedReview) {
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
+
+        if (reviewOptional.isEmpty()) {
+            logger.error("Failed to update review. Cannot find review (id: {})", id);
+            return false;
         }
-        return Status.FAILED;
+
+        if (inputValidator.areRequiredFieldsInvalid(updatedReview)) {
+            logger.error("Failed to update review (id: {}). Input fields are invalid", id);
+            return false;
+        }
+
+        dataFormatter.formatFields(updatedReview);
+
+        Review review = reviewOptional.get();
+        review.setComment(updatedReview.getComment());
+        review.setRating(updatedReview.getRating());
+
+        reviewRepository.save(review);
+        logger.info("Successfully updated review (id: {})", id);
+        return true;
     }
 
 
     // Delete
-    public Status deleteReview(long id) {
-        if (reviewRepository.findById(id).isPresent()) {
-            try {
-                reviewRepository.deleteById(id);
-                System.out.println("Successfully deleted review with Id: " + id);
-                return Status.SUCCESS;
-            } catch (Exception e) {
-                System.err.println("Failed to delete review on Id: " + id);
-                System.err.println(e.getMessage());
-            }
-        } else {
-            System.err.println("Failed to delete review. Cannot find review on Id: " + id);
+    public boolean deleteReview(long id) {
+        Optional<Review> reviewOptional = reviewRepository.findById((id));
+
+        if (reviewOptional.isEmpty()) {
+            logger.error("Failed to delete review. Cannot find review (id: {})", id);
+            return false;
         }
-        return Status.FAILED;
+
+        reviewRepository.deleteById(id);
+        logger.info("Successfully deleted review (id: {})", id);
+        return true;
     }
 
 
+
+    // Andere methodes
 }

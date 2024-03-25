@@ -1,73 +1,36 @@
 package nl.srhodenborgh.royalfruitresorts.controller;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import nl.srhodenborgh.royalfruitresorts.model.Account;
-import nl.srhodenborgh.royalfruitresorts.model.Hotel;
-import nl.srhodenborgh.royalfruitresorts.model.Review;
-import nl.srhodenborgh.royalfruitresorts.service.HotelService;
-import nl.srhodenborgh.royalfruitresorts.service.ReviewService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
+import nl.srhodenborgh.royalfruitresorts.model.Account;
+import nl.srhodenborgh.royalfruitresorts.model.Review;
+import nl.srhodenborgh.royalfruitresorts.service.ReviewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
-
-    @Autowired
-    private HotelService hotelService;
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
 
 
     // Create
-//    @PostMapping("/create-review/{hotelId}/{accountId}")
-//    public ReviewService.Status createReview(@PathVariable ("hotelId") long hotelId, @PathVariable ("accountId") long accountId, @RequestBody Review review) {
-//        return reviewService.createReview(hotelId, accountId, review);
-//    }
-
-    @PostMapping("/create-review/{hotelId}")
-    public ReviewService.Status createReview(@PathVariable ("hotelId") long hotelId, @RequestBody Review review, HttpServletRequest request) {
-    	Account account = (Account)request.getAttribute("YC_ACCOUNT");
+    @PostMapping("/create-review")
+    public boolean createReview(@RequestParam long hotelId, @RequestBody Review review, HttpServletRequest request) {
+    	Account account = (Account) request.getAttribute("RFR_ACC");
     	if (account == null) {
-    		return null;
+            logger.error("Failed to create review. Cannot find account");
+    		return false;
     	}
-    	
-    	Optional<Hotel> hotelOptional = hotelService.getHotel(hotelId);
-    	if (hotelOptional.isEmpty()) {
-    		return null;
-    	}
-    	
-    	if (review.getRating() < 1 || review.getRating() > 5) {
-	    	System.err.println("Rating should be between 1 and 5 stars");
-	    	return ReviewService.Status.INVALID_INPUT;
-	    } else if (review.getComment().length() > 1000){
-	    	System.err.println("Comment cannot contain more than 1000 characters");
-	    	return ReviewService.Status.INVALID_INPUT;
-	    }
-    	
-    	Review dbReview = new Review();
-    	dbReview.setComment(review.getComment());
-    	dbReview.setName(review.getName());
-    	dbReview.setAccount(account);
-    	dbReview.setHotel(hotelOptional.get());
-    	dbReview.setRating(review.getRating());
-    	dbReview.setDate(LocalDateTime.now());
 
-        reviewService.createReview(dbReview);
-
-        return ReviewService.Status.SUCCESS;
+        return reviewService.createReview(hotelId, account, review);
     }
+
 
 
     // Read
@@ -84,9 +47,9 @@ public class ReviewController {
 
 
 
-    // Edit
+    // Update
     @PutMapping("/update-review/{id}")
-    public ReviewService.Status updateReview(@PathVariable ("id") long id, @RequestBody Review updatedReview) {
+    public boolean updateReview(@PathVariable ("id") long id, @RequestBody Review updatedReview) {
         return reviewService.updateReview(id, updatedReview);
     }
 
@@ -94,7 +57,7 @@ public class ReviewController {
 
     // Delete
     @DeleteMapping("/delete-review/{id}")
-    public ReviewService.Status deleteReview(@PathVariable ("id") long id) {
+    public boolean deleteReview(@PathVariable ("id") long id) {
         return reviewService.deleteReview(id);
     }
 }

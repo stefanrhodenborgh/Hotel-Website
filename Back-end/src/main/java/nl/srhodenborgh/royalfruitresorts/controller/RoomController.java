@@ -22,7 +22,7 @@ public class RoomController {
     public boolean createRoom (@RequestBody Room room, @RequestParam long hotelId) {
 
 //        //BEVEILIGEN MET HTTPREQUEST
-//    	Account account = (Account)request.getAttribute("YC_ACCOUNT");
+//    	Account account = (Account)request.getAttribute("RFR_ACC");
 //    	if (account == null) {
 //    		return null;
 //    	}

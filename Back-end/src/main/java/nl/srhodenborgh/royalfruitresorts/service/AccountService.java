@@ -93,7 +93,7 @@ public class AccountService {
 
 
     public Optional<Account> getAccountFromToken(HttpServletRequest request) {
-        Account account = (Account)request.getAttribute("YC_ACCOUNT");
+        Account account = (Account)request.getAttribute("RFR_ACC");
         return Optional.ofNullable(account);
     }
 

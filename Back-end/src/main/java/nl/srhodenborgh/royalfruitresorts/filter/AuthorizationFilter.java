@@ -32,7 +32,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			Optional<Account> accountOptional = accountRepository.findByToken(token);
 			if (accountOptional.isPresent()) {
 				// Plaats die in de het request
-				request.setAttribute("YC_ACCOUNT", accountOptional.get());
+				request.setAttribute("RFR_ACC", accountOptional.get());
 			}
 		}
 		

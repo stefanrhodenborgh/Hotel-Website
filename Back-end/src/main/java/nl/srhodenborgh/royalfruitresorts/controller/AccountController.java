@@ -63,7 +63,7 @@ public class AccountController {
     // Update
     @PutMapping("/account/change-password")
     public boolean changePassword(@RequestBody String newPassword, HttpServletRequest request) {
-        Account account = (Account) request.getAttribute("YC_ACCOUNT");
+        Account account = (Account) request.getAttribute("RFR_ACC");
 
         if (account == null) {
             logger.error("Failed to change password. Token is invalid");

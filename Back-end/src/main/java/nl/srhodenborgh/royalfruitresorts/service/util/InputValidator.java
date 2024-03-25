@@ -97,9 +97,9 @@ public class InputValidator {
         // Nullable: comment
         // Date wordt automatisch toegewezen bij het creëren van een review
 
-        return isFieldInvalid(review.getName(), NAME_REGEX) ||
-                review.getRating() < 1.0 ||
-                review.getRating() > 5.0;
+        return review.getRating() < 1.0 ||
+                review.getRating() > 5.0 ||
+                review.getComment().length() > 1000;
     }
 
 
@@ -121,6 +121,10 @@ public class InputValidator {
 
     private boolean isPhoneNumberInvalid(String phoneNumber) {
         return !phoneNumber.matches(PHONE_NUMBER_REGEX);
+    }
+
+    public boolean isNameInvalid(String name) {
+        return isFieldInvalid(name, NAME_REGEX);
     }
 
 
