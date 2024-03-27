@@ -27,6 +27,10 @@ public class Hotel {
     private String city;
     @Column(nullable = false,length = 80)
     private String country;
+    @Column(nullable = false, length = 80)
+    private String email;
+    @Column(nullable = false, length = 50)
+    private String phoneNumber;
     @Column(length = 800)
     private String description;
     @OneToMany(mappedBy = "hotel")
@@ -34,7 +38,7 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel")
     private List<Review> reviews = new ArrayList<>();
 
-    // TODO: Email en phoneNumber toevoegen, allebei nullable. ook in frontend met fixed @rfr.nl. Al gefixt in klassendiagram
+    // TODO: Email en phoneNumber toevoegen aan Front End. Ook in frontend met fixed @rfr.nl
 
 
     public long getId() {
@@ -91,6 +95,22 @@ public class Hotel {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getDescription() {

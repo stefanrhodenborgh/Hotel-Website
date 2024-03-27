@@ -160,6 +160,8 @@ public class HotelService {
         hotel.setZipCode(updatedHotel.getZipCode());
         hotel.setCity(updatedHotel.getCity());
         hotel.setCountry(updatedHotel.getCountry());
+        hotel.setEmail(updatedHotel.getEmail());
+        hotel.setPhoneNumber(updatedHotel.getPhoneNumber());
         hotel.setDescription(updatedHotel.getDescription());
 
         hotelRepository.save(hotel);

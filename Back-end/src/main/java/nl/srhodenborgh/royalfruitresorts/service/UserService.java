@@ -31,6 +31,8 @@ public class UserService {
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
+    private AccountService accountService;
+    @Autowired
     private InputValidator inputValidator;
     @Autowired
     private DataFormatter dataFormatter;
@@ -144,7 +146,6 @@ public class UserService {
 
     // Delete
     public boolean deleteUser(long id) {
-        // TODO: Indien er een account is moet deze ook loskoppelen om user te kunnen verwijderen
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isEmpty()) {
@@ -154,6 +155,10 @@ public class UserService {
 
         if (userOptional.get().getReservations() != null) {
             cancelBookingsAndReservations(userOptional.get());
+        }
+
+        if (userOptional.get().getAccount() != null) {
+            accountService.deleteAccount(userOptional.get().getAccount().getId());
         }
 
         userRepository.deleteById(id);
