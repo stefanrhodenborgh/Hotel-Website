@@ -2,7 +2,7 @@ getAllHotels();
 
 
 function getAllHotels(){
-    fetch(url+"/allhotels")
+    fetch(url+"/all-hotels")
     .then(res => res.json())
     .then (hotels => {
         let hotelhtml = ""
@@ -34,7 +34,7 @@ async function createHotel(){
         "city": document.getElementById("city").value,
         "country": document.getElementById("country").value       
     }
-    fetch(url+"/createhotel", {
+    fetch(url+"/create-hotel", {
     method: "POST", // or 'PUT'
     headers: {
         "Content-Type": "application/json",
@@ -79,7 +79,7 @@ function submitHotelForm(hotelId) {
         "country": document.getElementById("editCountry").value     
     }
 
-    fetch(url+"/edithotel/" + hotelId, {
+    fetch(url+"/update-hotel/" + hotelId, {
         method: "POST", // or 'PUT'
         headers: {
             "Content-Type": "application/json",
@@ -91,7 +91,7 @@ function submitHotelForm(hotelId) {
 }
 
 async function deleteHotel(hotelId) {
-    fetch(url+"/deletehotel/" + hotelId);
+    fetch(url+"/delete-hotel/" + hotelId);
     alert("Hotel successfully deleted");
     getAllHotels();
 }

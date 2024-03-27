@@ -42,7 +42,7 @@ function setMinCheckOutDate(){
 }
 
 function getAllHotels(){
-    return fetch(url+"/allhotels")
+    return fetch(url+"/all-hotels")
     .then(hotels => hotels.json());
 }
 
@@ -71,8 +71,8 @@ async function searchRooms() {
 
     // Parameters om de beschikbare kamers mee te zoeken
     const hotelId = hotelDropdown.value;
-    const ciDate = checkInInput.value;
-    const coDate = checkOutInput.value;
+    const checkInDate = checkInInput.value;
+    const checkOutDate = checkOutInput.value;
     const adults = adultsInput.value;
     const children = childrenInput.value;
 
@@ -80,11 +80,20 @@ async function searchRooms() {
     const query = {
         hotelId,
         hotelName,
-        ciDate,
-        coDate,
+        checkInDate,
+        checkOutDate,
         adults,
         children
     };
+
+    // DEZE MOET EFFICIENTER KUNNEN WORDEN GESCHREVEN. WORK IN PROGRESS!!
+    const searchQuery = {
+        "hotelId": hotelId,
+        "checkInDate": checkInDate,
+        "checkOutDate": checkOutDate,
+        "adults": adults,
+        "children": children
+    }
 
 
     // Stopt deze functie als er minder dan 1 volwassene is ingevoerd
@@ -95,8 +104,14 @@ async function searchRooms() {
 
     try {
         // URL van de endpoint in back-end
-        const urllocal = url+`/searchrooms/${hotelId}?cid=${ciDate}&cod=${coDate}&adults=${adults}&children=${children}`;
-        const response = await fetch(urllocal)
+        const urllocal = url + "/search-rooms";
+        const response = await fetch(urllocal, {
+            method: "GET",
+            headers: {
+                "Content_Type": "application/json", 
+            },
+            body: JSON.stringify(searchQuery),
+        })
 
         // Checkt of hij een response kan krijgen van de URL
         if (!response.ok) {

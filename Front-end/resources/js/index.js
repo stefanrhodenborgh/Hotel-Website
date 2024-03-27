@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function getAllHotels() {
-    return fetch(url+"/allhotels")
+    return fetch(url+"/all-hotels")
     .then(hotels => hotels.json());
 }
 
@@ -84,8 +84,8 @@ async function searchRooms() {
 
     // Parameters om de beschikbare kamers mee te zoeken
     const hotelId = hotelDropdown.value;
-    const ciDate = checkInInput.value;
-    const coDate = checkOutInput.value;
+    const checkInDate = checkInInput.value;
+    const checkOutDate = checkOutInput.value;
     const adults = adultsInput.value;
     const children = childrenInput.value;
     const roomType = roomTypeInput.value;
@@ -94,8 +94,8 @@ async function searchRooms() {
     const query = {
         hotelId,
         hotelName,
-        ciDate,
-        coDate,
+        checkInDate,
+        checkOutDate,
         adults,
         children,
         roomType

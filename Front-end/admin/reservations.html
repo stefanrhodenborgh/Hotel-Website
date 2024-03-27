@@ -28,8 +28,8 @@
         <option value="hotelName">Hotel name</option>
         <option value="roomId">Room id</option>
         <option value="reservationId">Reservation id</option>
-        <option value="ciDate">Check-in date</option>
-        <option value="coDate">Check-out date</option>
+        <option value="checkInDate">Check-in date</option>
+        <option value="checkOutDate">Check-out date</option>
         <option value="adults">Adults</option>
         <option value="children">Children</option>
         <option value="surcharge">Surcharge</option>
@@ -43,9 +43,9 @@
     <div id="editReservation">
         <!-- <h2>Edit reservation</h2>
             <label>Check-in date:</label>
-            <input type="date" id="editCheckIn" value="${reservation.ciDate}" onchange="setMinCheckOutDate()" ><br>
+            <input type="date" id="editCheckIn" value="${reservation.checkInDate}" onchange="setMinCheckOutDate()" ><br>
             <label>Check-out date:</label>
-            <input type="date" id="editCheckOut" value="${reservation.coDate}"><br>
+            <input type="date" id="editCheckOut" value="${reservation.checkOutDate}"><br>
             <label>Adults: </label>
             <input type="number" id="editAdults" value="${reservation.adults}"><br>
             <label>Children:</label>

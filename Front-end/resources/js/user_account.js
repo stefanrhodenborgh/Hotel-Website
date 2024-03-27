@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // globale variabelen maken
     window.loggedInAccount = account;
     window.loggedInUser = user;
-    window.reservationTime = "future";
+    window.reservationTime = "present";
 
     document.getElementById("user-name").textContent += user.firstName + " " + user.lastName;
     document.getElementById("loyaltyPoints").textContent += account.loyaltyPoints;
@@ -54,12 +54,12 @@ function isChecked() {
 
 function toggleResBtn(time, isCheckboxChecked) {
     // Remove "active" class from all buttons
-    document.getElementById("future-btn").classList.remove("active");
+    document.getElementById("present-btn").classList.remove("active");
     document.getElementById("past-btn").classList.remove("active");
 
     // Add "active" class to the clicked button
-    if (time === "future") {
-        document.getElementById("future-btn").classList.add("active");
+    if (time === "present") {
+        document.getElementById("present-btn").classList.add("active");
     } else if (time === "past") {
         document.getElementById("past-btn").classList.add("active");
     }
@@ -68,7 +68,7 @@ function toggleResBtn(time, isCheckboxChecked) {
 
 
 async function displayReservations(time, isCheckboxChecked) {
-    // time = "past" of "future" of "current"
+    // time = "past" of "present" of "current"
     if (time === 'current') { 
         time = window.reservationTime;
     } else {
@@ -79,7 +79,7 @@ async function displayReservations(time, isCheckboxChecked) {
 
     let userId = window.loggedInUser.id;
 
-    const response = await fetch(url+`/${userId}/reservations?pastOrFuture=${time}`)
+    const response = await fetch(url+`/${userId}/reservations?pastOrPresent=${time}`)
     if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -118,12 +118,12 @@ async function displayReservations(time, isCheckboxChecked) {
         reservationHTML += `
         <tr id="reservation-${res[i].reservation.id}" class="text-white">
             <td class="res-data">${res[i].hotelName}</td>
-            <td class="res-data">${res[i].reservation.ciDate} - ${res[i].reservation.coDate}</td>
+            <td class="res-data">${res[i].reservation.checkInDate} - ${res[i].reservation.checkOutDate}</td>
             <td class="res-data">${status}</td>
         `;
         
         // Cancel button toevoegen alleen als reservationStatus "CANCELLED" is
-        if (res[i].reservation.reservationStatus !== "CANCELLED" && time === "future") {
+        if (res[i].reservation.reservationStatus !== "CANCELLED" && time === "present") {
             reservationHTML += `<td class="res-data res-btn"><button class="btn btn-outline-secondary text-white btn-sm" type="button" onclick="cancelReservation(${res[i].reservation.id})">Cancel reservation</button></td>`;
         } else {
             reservationHTML += `<td></td>`
@@ -224,7 +224,7 @@ async function submitForm() {
         }
     }
 
-    const response = await fetch(url+"/edituser/" + userId, {
+    const response = await fetch(url+"/update-user/" + userId, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -290,7 +290,7 @@ async function cancelReservation(reservationId) {
     if (result === true) {
         alert("Successfully canceled reservation");
         document.getElementById(`reservation-${reservationId}`).remove();
-        displayReservations("future", isChecked());
+        displayReservations("present", isChecked());
         location.reload();
     } else {
         alert("An error occurred while canceling the reservation")

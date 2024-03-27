@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function getAllUsers(){
-    fetch(url+"/allusers")
+    fetch(url+"/all-users")
     .then(res => res.json())
     .then (users => {
         let userhtml = ""
@@ -43,7 +43,7 @@ async function createUser(){
         "email": document.getElementById("email").value,     
         "phoneNumber": document.getElementById("phoneNumber").value      
     }
-    await fetch(url+"/createuser", {
+    await fetch(url+"/create-user", {
     method: "POST", // or 'PUT'
     headers: {
         "Content-Type": "application/json",
@@ -100,7 +100,7 @@ async function submitForm(userId) {
         "phoneNumber": document.getElementById("editPhoneNumber").value
     }
 
-    await fetch(url+"/edituser/" + userId, {
+    await fetch(url+"/update-user/" + userId, {
         method: "POST", // or 'PUT'
         headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ async function submitForm(userId) {
 
 async function deleteUser(id, firstName, lastName) {
     if (confirm("Are you sure you want to delete user: " + id + " "+ firstName + " " + lastName)) {
-        await fetch(url+"/deleteuser/" + id);
+        await fetch(url+"/delete-user/" + id);
         getAllUsers();
     }
 }

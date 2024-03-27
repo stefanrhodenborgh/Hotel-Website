@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function getAllHotels(){
-    return fetch(url+"/allhotels")
+    return fetch(url+"/all-hotels")
     .then(hotels => hotels.json());
 }
 
@@ -76,7 +76,7 @@ async function createRoom() {
         "price": document.getElementById("price").value
     }
     
-    await fetch(url+"/createroom?hotelId=" + hotelId, {
+    await fetch(url+"/create-room?hotelId=" + hotelId, {
         method: "POST", // or 'PUT'
         headers: {
             "Content-Type": "application/json",
@@ -130,12 +130,14 @@ async function editRoom(roomId, hotelId) {
 
 function submitRoomForm(roomId) {
     let edditedRoom = {
+        "id": roomId,
         "roomType": document.getElementById("editRoomTypeDropdown").value,
         "numBeds": document.getElementById("editnumBeds").value,
+        "description": document.getElementById("description").value,
         "price": document.getElementById("editPrice").value
     };
     let edditedHotelId = document.getElementById("editHotelDropdown").value;
-    fetch(url+"/editroom/" + roomId + "?hotelId=" + edditedHotelId, {
+    fetch(url+"/update-room?hotelId=" + edditedHotelId, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -150,7 +152,7 @@ function submitRoomForm(roomId) {
 
 function deleteRoom(roomId) {
     if (confirm("Are you sure you want to delete room: " + roomId)) {
-        fetch(url+"/deleteroom/" + roomId)
+        fetch(url+"/delete-room/" + roomId)
         .then(response => {
             displayRooms();
         });

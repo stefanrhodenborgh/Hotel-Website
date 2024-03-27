@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
 function getAllHotels() {
-    return fetch(url+"/allhotels")
+    return fetch(url+"/all-hotels")
     .then(hotels => hotels.json());
 }
 
@@ -67,7 +67,7 @@ async function displayRooms() {
 async function getAllReservations(){
     let sort = document.getElementById("sort").value;
 
-    await fetch(url+"/allreservations?sort=" + sort)
+    await fetch(url+"/all-reservations?sort=" + sort)
     .then(res => res.json())
     .then (reservations => {
         let reservationshtml = `
@@ -95,8 +95,8 @@ async function getAllReservations(){
                 <td>${reservations[i].hotelName}</td>
                 <td>${reservations[i].roomId}</td>
                 <td>${reservations[i].reservation.id}</td>
-                <td>${reservations[i].reservation.ciDate}</td>
-                <td>${reservations[i].reservation.coDate}</td>
+                <td>${reservations[i].reservation.checkInDate}</td>
+                <td>${reservations[i].reservation.checkOutDate}</td>
                 <td>${reservations[i].reservation.adults}</td>
                 <td>${reservations[i].reservation.children}</td>
                 <td>${reservations[i].reservation.surcharge}</td>
@@ -119,25 +119,25 @@ async function createReservation() {
         "hotelId": document.getElementById("hotelDropdown2").value,
         "roomId": document.getElementById("roomDropdown").value,
         "reservation": {
-            "ciDate": document.getElementById("checkIn").value,
-            "coDate": document.getElementById("checkOut").value,
+            "checkInDate": document.getElementById("checkIn").value,
+            "checkOutDate": document.getElementById("checkOut").value,
             "adults": document.getElementById("adults").value,
             "children": document.getElementById("children").value,    
         },
         "userId": 3,
     };
-    console.log(resDTO.reservation.ciDate);
+    console.log(resDTO.reservation.checkInDate);
 
-    if (resDTO.reservation.ciDate == null) {
+    if (resDTO.reservation.checkInDate == null) {
         alert("Please fill in check-in date")
-    } else if (resDTO.reservation.coDate == null) {
+    } else if (resDTO.reservation.checkOutDate == null) {
         alert("Please fill in check-out date")
     } else if (resDTO.reservation.adults == null) {
         alert("Please fill in the number of adults")
     } else if (resDTO.reservation.children == null) {
         alert("Please fill in the number of children")
     } else {
-        const res = await fetch(url+"/createreservation", {
+        const res = await fetch(url+"/create-reservation", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -189,7 +189,7 @@ async function deleteReservation(reservationId) {
 }
 
 async function editReservation(reservationId, hotelId) {
-    await fetch(url+"/editreservation/" + reservationId)
+    await fetch(url+"/update-reservation/" + reservationId)
     .then(res => res.json())
     .then(reservation => {
         let form = `
