@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
 function getUUIDFromURL() {
     const url = window.location.search;
     return new URLSearchParams(url).get('uuid');
-    return uuid;
 }
 
 
@@ -33,6 +32,7 @@ function getReservationStatus() {
             console.error('Error:', error);
         });
 }
+
 
 function setBooked(status) {
     let statusTxt = document.getElementById('txt-status')

@@ -6,25 +6,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     displayRooms();
 });
 
-function getAllHotels(){
-    return fetch(url+"/all-hotels")
-    .then(hotels => hotels.json());
-}
-
-
-function populateDropdown(items, elementId, setValue) {
-    //methode om een dropdown(elementId) te vullen met items en de selector op een item te zetten
-    const dropdown = document.getElementById(elementId);
-
-    items.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        dropdown.appendChild(option);
-    });
-    dropdown.value = setValue;
-}
-
 
 async function displayRooms() {
     //methode om alle kamers uit de hotel dropdown te laten zien.
