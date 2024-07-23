@@ -2,11 +2,14 @@ package nl.srhodenborgh.royalfruitresorts.controller;
 
 import nl.srhodenborgh.royalfruitresorts.dto.RoomDTO;
 import nl.srhodenborgh.royalfruitresorts.dto.RoomSearchDTO;
+import nl.srhodenborgh.royalfruitresorts.enums.RoomType;
 import nl.srhodenborgh.royalfruitresorts.model.Room;
 import nl.srhodenborgh.royalfruitresorts.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 @RestController
@@ -44,6 +47,11 @@ public class RoomController {
     @GetMapping("/room/{id}")
     public Optional<Room> getRoom(@PathVariable ("id") long id){
         return roomService.getRoom(id);
+    }
+
+    @GetMapping("/room-types")
+    public Iterable<RoomType> getRoomTypes() {
+        return new ArrayList<>(Arrays.stream(RoomType.values()).toList());
     }
 
     @GetMapping("/search-rooms")

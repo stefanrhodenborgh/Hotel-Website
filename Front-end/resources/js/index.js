@@ -1,9 +1,11 @@
 //Startup script:
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener('DOMContentLoaded', function () {
     // Hoteldropdown vullen met hotels
-    await getAllHotels().then(hotels => {
+    getAllHotels().then(hotels => {
         populateDropdown(hotels, "hotelDropdown", 1)
     });
+    disableKeyboardInput();
+    loadCarousel();
 });
 
 
@@ -36,15 +38,10 @@ async function searchRooms() {
     const checkOutInput = document.getElementById("checkOut");
     const adultsInput = document.getElementById("adults");
     const childrenInput = document.getElementById("children");
-    const roomTypeInput = document.getElementById("roomTypeDropDown");
 
     // HotelName krijgen uit de textwaarde van geselecteerde optie in hotelDropdown
     const selectedOption = hotelDropdown.options[hotelDropdown.selectedIndex];
     const hotelName = selectedOption.textContent;
-
-    // RoomType krijgen uit de textwaarde van geselecteerde optie in roomTypeDropdown
-    const selectedOptionRoom = roomTypeDropdown.options[roomTypeDropdown.selectedIndex];
-    const roomTypeChoice = selectedOption.textContent;
 
     // Parameters om de beschikbare kamers mee te zoeken
     const hotelId = hotelDropdown.value;
@@ -52,7 +49,6 @@ async function searchRooms() {
     const checkOutDate = checkOutInput.value;
     const adults = adultsInput.value;
     const children = childrenInput.value;
-    const roomType = roomTypeInput.value;
 
     // Object maken van de query om later door te geven
     const query = {
@@ -61,8 +57,7 @@ async function searchRooms() {
         checkInDate,
         checkOutDate,
         adults,
-        children,
-        roomType
+        children
     };
 
 
@@ -71,5 +66,51 @@ async function searchRooms() {
         alert("Rooms may not be reserved without an adult present")
         return;
     }
-}
 
+}
+    // function loadCarousel() {
+    //     // Alle hotelfoto's in de carousel laden
+
+    //     const 
+
+    //     let carousel = 
+    //     `<div class="carousel-item active">
+    //         <img src="./resources/images/hotels/hotel 1/1.webp" class="d-block w-100" alt="..." style="filter:brightness(70%);">
+    //         <div class="carousel-caption d-none d-md-block">
+    //         <h5>Eindhoven Inn</h5>
+    //         <p>Where style meets excellence </p>
+    //         <button class="btn btn-outline-light btn-md">Explore</button>
+    //         </div>
+    //     </div>`
+    // }
+
+    function loadCarousel() {
+        // Initialize the Bootstrap Carousel with interval set to false
+        let myCarousel = new bootstrap.Carousel(document.getElementById('carousel'), {
+            interval: false // Disable automatic sliding
+        });
+    
+        // Add event listeners for manual navigation
+        document.getElementById('prevBtn').addEventListener('click', function () {
+            myCarousel.prev();
+        });
+    
+        document.getElementById('nextBtn').addEventListener('click', function () {
+            myCarousel.next();
+        });
+    }
+
+    async function changeHotel() {
+        // Hotel uit dropdown halen
+        const dropdown = document.getElementById("hotelDropdown");
+        const selectedOption = dropdown.options[dropdown.selectedIndex];
+        const selectedText = selectedOption.text;
+    
+        // Locatie van hotel vinden
+        const res = await fetch(url+"/hotel/" + selectedOption.value)
+        const hotel = await res.json();
+    
+        // Geselecteerde hotel in titel zetten
+        const hotelValue = document.getElementById('hotelValue');
+        hotelValue.textContent = selectedText + " situated at " + hotel.city;
+    }

@@ -2,9 +2,38 @@
 const url = "http://127.0.0.1:8080";
 
 
+// function getAllHotels() {
+//     const hotels = fetch(url + "/all-hotels");
+//     return hotels.json();
+// }
+
 function getAllHotels() {
-    return fetch(url+"/all-hotels")
-    .then(hotels => hotels.json());
+    return fetch(url + "/all-hotels")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error fetching hotels:', error);
+            return null; 
+        });
+}
+
+
+function getRoomTypes() {
+    return fetch(url + "/room-types")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    }) 
+    .catch(error => {
+        console.error('Error fetching roomTypes:', error);
+            return null; 
+        });
 }
 
 
@@ -20,6 +49,24 @@ function populateDropdown(items, elementId, selectValue) {
     });
     dropdown.value = selectValue;
 }
+
+
+// function populateEnumDropdown(items, elementId, selectValue) {
+//     const dropdown = document.getElementById(elementId);
+
+//     items.forEach(item => {
+//         const option = document.createElement("option");
+        
+//         let text = item.replace('_', ' ');
+//         text = text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
+//         option.textContent = text;
+//         option.value = item;
+
+//         dropdown.appendChild(option);
+//     });
+//     // -1 is correctie zodat de eerste optie 1 is en niet 0. Dit wegens consistentie met andere functies
+//     dropdown.value = items[selectValue - 1];
+// }
 
 
 function setMinCheckOutDate() {
@@ -39,3 +86,12 @@ function setMinCheckOutDate() {
 }
 
 
+// Function to disable keyboard input for specific date input fields
+function disableKeyboardInput() {
+    const disableKeyboardInputs = document.querySelectorAll('.disable-keyboard-input[type="date"]');
+    disableKeyboardInputs.forEach(input => {
+        input.addEventListener('keydown', event => {
+            event.preventDefault();
+        });
+    });
+}
