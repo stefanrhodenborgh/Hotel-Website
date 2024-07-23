@@ -16,47 +16,11 @@ body{
 
 /*navbar*/
 
-.nav-item{
+/* .nav-item{
     display: flex;
     flex-direction: column;
     margin-left: 20px;
-}
-
-#nav-top a{
-    color: #fff;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-#nav-bottom{
-    margin-top: 5rem;
-}
-
-#nav-bottom label{
-    color: #fff;
-    font-size: 18px;
-    font-weight: 400;
-}
-
-#nav-bottom input{
-    padding: 3px;
-    border-radius: 5px;
-    border: 1px solid #fff;
-    margin: 0.5rem 0;
-}
-
-#nav-bottom select{
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #fff;
-    margin: 0.5rem 0;
-}
-
-#nav-bottom button{
-    margin-top:auto;
-    margin-bottom: 5px;
-
-}
+} */
 
 
 /*hero*/
@@ -64,7 +28,7 @@ body{
 #hero{
     background-image:
                 linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)),
-                url('https://yc2401fotos.blob.core.windows.net/upload/hotel_hero.jpeg');
+                url('/resources/images/banners/Banner.jpg');
     background-repeat: no-repeat;
     height: 800px;
 }
@@ -76,28 +40,25 @@ body{
 
 /*history*/
 
-#history{
+/* #history{
     padding-top: 10rem;
     padding-bottom: 10rem;
     background-color: var(--secondary);
-}
+} */
 
-#history-card{
+/* #history-card{
     background-color: var(--background);
     color: #fff;
     border: 2px solid var(--secondary);
-}
+} */
 
 /*carousel*/
 
-#carouselbox{
+/* #carouselbox{
     margin: auto;
-    width: 1000px;
+    width: 1000px; 
+} */
 
-    
-    
-}
-
-#Explore{
+/* #Explore{
     background-color: var(--primary);
-}
+} */

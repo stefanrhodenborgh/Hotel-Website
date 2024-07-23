@@ -20,42 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //hotel dropdown direct vullen met hotels
     getAllHotels().then(hotels => {
-        populateHotelsDropdown(hotels)
+        populateDropdown(hotels, "hotelDropdown", 1)
     });
 });
 
-
-function setMinCheckOutDate(){
-    // Minimumdatum van checkout op volgende dag zetten indien checkin na checkout is
-    let checkInDate = new Date(document.getElementById("checkIn").value);
-    let checkOutDate = new Date(document.getElementById("checkOut").value);
-    
-    // Minimumdatum checkOut beweegt mee met de checkIn
-    let nextDay = new Date(checkInDate);
-    nextDay.setDate(checkInDate.getDate() + 1);   
-    document.getElementById("checkOut").min = nextDay.toISOString().split('T')[0];
-    
-    // Zet de waarde op de volgende dag t.o.v. checkIn indien de checkIn datum na de checkOut is geprikt
-    if (checkInDate >= checkOutDate) {    
-        document.getElementById("checkOut").value = nextDay.toISOString().split('T')[0];
-    }
-}
-
-function getAllHotels(){
-    return fetch(url+"/all-hotels")
-    .then(hotels => hotels.json());
-}
-
-function populateHotelsDropdown(hotels) {
-    const dropdown = document.getElementById("hotelDropdown");
-
-    hotels.forEach(hotel => {
-        const option = document.createElement("option");
-        option.value = hotel.id;
-        option.textContent = hotel.name;
-        dropdown.appendChild(option);
-    });
-}
 
 async function searchRooms() {
     // Elementen ophalen

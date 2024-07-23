@@ -16,28 +16,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 
-
-function getAllHotels() {
-    return fetch(url+"/all-hotels")
-    .then(hotels => hotels.json());
-}
-
-
-function populateDropdown(items, elementId, setValue) {
-    //methode om een dropdown(elementId) te vullen met items en de selector op een item te zetten
-    // const dropdown = document.getElementById(elementId);
-    const dropdown = document.getElementById(elementId);
-
-    items.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        dropdown.appendChild(option);
-    });
-    dropdown.value = setValue;
-}
-
-
 async function displayRooms() {
     //methode om alle kamers uit de hotel dropdown te laten zien.
     //methode werkt op onchange, dus wordt aangeroepen als de hotel dropdown waarde verandert.
@@ -59,9 +37,6 @@ async function displayRooms() {
         document.getElementById("roomDropdown").value = "unassigned";
     })
 }
-
-
-
 
 
 async function getAllReservations(){
@@ -157,30 +132,6 @@ async function createReservation() {
 }
 }
 
-async function assignRoom(reservation) {
-    let roomId = document.getElementById("roomDropdown").value;
-    if (roomId !== null) {
-        console.log(reservation.id);
-        await fetch(url+"/reservations/assignroom?reservationId=" + reservation.id + "&roomId=" + roomId, {
-        method: "POST", 
-        headers: {
-            "Content-Type": "application/json",
-        }})
-    }
-    
-}
-
-async function assignUser(reservation) {
-    let userId = document.getElementById("user").value;
-    if (userId !== null) {
-        await fetch(url+"/reservations/assignuser?reservationId=" + reservation.id + "&userId=" + userId, {
-        method: "POST", 
-        headers: {
-            "Content-Type": "application/json",
-        }})
-    }
-}
-
 
 async function deleteReservation(reservationId) {
     await fetch(url+"/deletereservation/" + reservationId);
@@ -210,27 +161,5 @@ async function editReservation(reservationId, hotelId) {
         <input type="text" id="editPrice" value="${reservation.price}"><br>
         <button onclick="submitRoomForm(${reservation.id})">Save changes</button>      
         `
-
-        // getAllHotels().then(hotels => {
-        //     populateDropdown(hotels, "editHotelDropdown", hotelId);
-        //     });
-        
-        // document.getElementById("editRoom").innerHTML = form;
     });
-}
-
-function setMinCheckOutDate() {
-    // Minimumdatum van checkout op volgende dag zetten indien checkin na checkout is
-    let checkInDate = new Date(document.getElementById("checkIn").value);
-    let checkOutDate = new Date(document.getElementById("checkOut").value);
-    
-    // Minimumdatum checkOut beweegt mee met de checkIn
-    let nextDay = new Date(checkInDate);
-    nextDay.setDate(checkInDate.getDate() + 1);   
-    document.getElementById("checkOut").min = nextDay.toISOString().split('T')[0];
-    
-    // Zet de waarde op de volgende dag t.o.v. checkIn indien de checkIn datum na de checkOut is geprikt
-    if (checkInDate >= checkOutDate) {    
-        document.getElementById("checkOut").value = nextDay.toISOString().split('T')[0];
-    }
 }

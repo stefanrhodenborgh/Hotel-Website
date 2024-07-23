@@ -11,7 +11,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    // TODO: Password hashed maken
     @Column(nullable = false, length = 100)
     private String password;
 
